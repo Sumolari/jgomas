@@ -24,64 +24,82 @@ type("CLASS_FIELDOPS").
 /// CUSTOM ACTIONS
 /////////////////////////////////
 
+sqpatrol(0).
 +!square_patrol <-
+	?sqpatrol(P);
 	?my_position(X,Y,Z);
-	.println( "Estoy en X:", X, " Y:", Y, " Z:", Z);
-	!add_task(
-		task(
-			3003,
-			"TASK_GOTO_POSITION",
-			M,
-			pos(
-				X + 20,
-				Y,
-				Z
-			),
-			""
-		)
-	);
-	.println( "Me muevo a X:", X+20, " Z:", Z+20);
-	!add_task(
-		task(
-			3002,
-			"TASK_GOTO_POSITION",
-			M,
-			pos(
-				X + 20,
-				Y,
-				Z + 20
-			),
-			""
-		)
-	);
-	.println( "Me muevo a Z:", Z+20);
-	!add_task(
-		task(
-			3001,
-			"TASK_GOTO_POSITION",
-			M,
-			pos(
-				X,
-				Y,
-				Z + 20
-			),
-			""
-		)
-	);
-	.println( "Me muevo a X:", X);
-	!add_task(
-		task(
-			3000,
-			"TASK_GOTO_POSITION",
-			M,
-			pos(
-				X,
-				Y,
-				Z
-			),
-			""
-		)
-	);
+	.println( "Estoy en X:", X, " Y:", Y, " Z:", Z, " P:", P );
+	-+sqpatrol( ( P + 1 ) );
+	if ( P == 0 ) {
+		.println( "Patrulla al noroeste" );
+		!add_task(
+			task(
+				3000,
+				"TASK_GOTO_POSITION",
+				M,
+				pos(
+					190,
+					Y,
+					190
+				),
+				""
+			)
+		);
+	}
+	if ( P == 1 ) {
+		.println( "Patrulla al suroeste" );
+		!add_task(
+			task(
+				3000,
+				"TASK_GOTO_POSITION",
+				M,
+				pos(
+					160,
+					Y,
+					190
+				),
+				""
+			)
+		);
+	}
+	if ( P == 2 ) {
+		.println( "Patrulla al sureste" );
+		!add_task(
+			task(
+				3000,
+				"TASK_GOTO_POSITION",
+				M,
+				pos(
+					160,
+					Y,
+					160
+				),
+				""
+			)
+		);
+	}
+	if ( P == 3 ) {
+		.println( "Patrulla al noreste" );
+		!add_task(
+			task(
+				3000,
+				"TASK_GOTO_POSITION",
+				M,
+				pos(
+					160,
+					Y,
+					190
+				),
+				""
+			)
+		);
+	}
+	if ( P + 1 == 4 )
+	{
+		.println( "Nueva P: ", 0 );
+		-+sqpatrol( 0 );
+		.println( "Nueva P: ", 0 );
+	}
 	.
 
 /////////////////////////////////
@@ -299,7 +317,8 @@ type("CLASS_FIELDOPS").
 	+task_priority("TASK_RUN_AWAY", -1500);
 	+task_priority("TASK_GOTO_POSITION", -750);
 	+task_priority("TASK_PATROLLING", -500);
-	+task_priority("TASK_WALKING_PATH", -1750).
+	+task_priority("TASK_WALKING_PATH", -1750);
+	+task_priority("TASK_SQUARE_PATROL",5000).
 
 /////////////////////////////////
 //  UPDATE TARGETS
@@ -317,6 +336,7 @@ type("CLASS_FIELDOPS").
  */
 
 +!update_targets <-
+	!square_patrol;
 	?debug(Mode);
 	if ( Mode <= 1 ) {
 		.println("YOUR CODE FOR UPDATE_TARGETS GOES HERE.")
@@ -440,7 +460,6 @@ type("CLASS_FIELDOPS").
 /////////////////////////////////
 
 +!init <-
-	!square_patrol;
 	?debug(Mode);
 	if ( Mode <= 1 ) {
 		.println("YOUR CODE FOR init GOES HERE.")
