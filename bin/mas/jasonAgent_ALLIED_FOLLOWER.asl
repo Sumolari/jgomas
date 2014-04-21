@@ -25,13 +25,13 @@ type("CLASS_FIELDOPS").
 /////////////////////////////////
 
 following("NO").
-+!follow_agent(Agente) <-
-	/**
-	 * @TODO De momento sigue al primer tío que se encuentra, pero lo ideal es
-	 *       que siga a un agente determinado.
-	 */
-	.println( "Siguiendo al agente: ", Agente );
-	-+following("YES");
+
+/**
+ * Se pone a seguir a un agente del equipo dado.
+ */
++!follow_agent( TEAM ) <-
+	.println( "Siguiendo a algun miembro del equipo: ", TEAM );
+	-+following( TEAM );
 	!add_task(
 		task(
 			2999,
@@ -47,25 +47,43 @@ following("NO").
 	);
 	.
 
-+!perform_look_action_follow_agent : following( "YES" ) <-
+/**
+ * "Callback" que se ejecuta cada vez que el agente percibe objetos en su punto
+ * de vista.
+ */
++!perform_look_action_follow_agent : following( TEAM ) & TEAM > 0 <-
 	?fovObjects(FOVObjects);
 	.length( FOVObjects, L );
-	if ( L > 0 ) {
-		.nth( 0, FOVObjects, A );
-		.nth( 6, A, Posicion);
-		.println( "Voy hacia: ", Posicion );
-		!add_task(
-			task(
-				3000,
-				"TASK_GOTO_POSITION_2",
-				M,
-				Posicion,
-				""
-			)
-		);
-	} else {
+	+auxC( 0 );
+	+targetFound( "NO" );
+	//.println(FOVObjects);
+	while ( auxC( C ) & L > C & targetFound( "NO" ) ) {
+		.nth( C, FOVObjects, A );
+		.nth( 1, A, Equipo );
+		.println( A );
+		if ( Equipo == TEAM ) {
+			.nth( 6, A, Posicion);
+			.println( "Voy hacia: ", Posicion );
+			!add_task(
+				task(
+					3000,
+					"TASK_GOTO_POSITION_2",
+					M,
+					Posicion,
+					""
+				)
+			);
+			-+targetFound( "SI" );
+		}
+		-+auxC( C + 1 );
+	}
+	-auxC(_);
+
+	if ( targetFound( "NO" ) ) {
 		.println( "No veo a quien seguir..." );
 	}
+
+	-targetFound(_);
 	.
 
 +!perform_look_action_follow_agent .
@@ -306,7 +324,7 @@ following("NO").
  */
 
 +!update_targets <-
-	!follow_agent("Leader");
+	!follow_agent( 100 );
 	?debug(Mode);
 	if ( Mode <= 1 ) {
 		.println("YOUR CODE FOR UPDATE_TARGETS GOES HERE.")
