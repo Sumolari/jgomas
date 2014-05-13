@@ -1,0 +1,1 @@
+La carpeta "maps" y "RenderJGOMAS_Data" deben ir en la misma carpeta que el ejecutable
