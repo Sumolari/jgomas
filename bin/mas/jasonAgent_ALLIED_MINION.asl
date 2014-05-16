@@ -25,12 +25,15 @@ type("CLASS_FIELDOPS").
 /////////////////////////////////
 
 following("NO").
+go_now(0).
+vigil_direction(1).
+search_radius(3).
 
 /**
  * Se pone a seguir a un agente del equipo dado.
  */
-+!follow_agent( TEAM ) <-
-	.println( "Siguiendo a algun miembro del equipo: ", TEAM );
++!order( X, Y, Z )[source(A)] <-
+	.println( "Gotta go to ", X, " ", Y, " ", Z );
 	-+following( TEAM );
 	!add_task(
 		task(
@@ -38,13 +41,54 @@ following("NO").
 			"TASK_GOTO_POSITION_3",
 			M,
 			pos(
-				170,
+				X,
 				0,
-				170
+				Z
 			),
 			""
 		)
 	);
+	.
+
++!do_nothing <-
+	?state(State);
+	?tasks(Tasks);
+	.println("State: ", State, "  Tasks:", Tasks);
+	-+go_now(10);
+	.
+
++!do_algo : go_now(N) & N > 0 <-
+	?state(State);
+	?tasks(Tasks);
+	.println("State algo: ", State, "  Tasks algo:", Tasks);
+	-+state(standing);
+	-+tasks([]);
+	-+go_now(0);
+	.
+
++!search_commander(X,Z,O) <-
+	?search_radius(R);
+	
+	if( O == 1 ) { Xp = X - R; Zp = Z; }
+	if( O == 2 ) { Xp = X; Zp = Z + R; }
+	if( O == 3 ) { Xp = X + R; Zp = Z; }
+	if( O == 4 ) { Xp = X; Zp = Z - R; }
+	
+	!add_task(
+		task(
+			7501,
+			"TASK_GOTO_POSITION_2",
+			M,
+			pos(
+				Xp,
+				0,
+				Zp
+			),
+			""
+		)
+	);
+	?tasks(Ta);
+	.println(Ta);
 	.
 
 +!cmdpos(Equis,Igrega,Ceta)[source(S)] <-
@@ -63,6 +107,8 @@ following("NO").
 		)
 	);
 	.
+	
++!do_algo .
 
 /**
  * "Callback" que se ejecuta cada vez que el agente percibe objetos en su punto
@@ -255,7 +301,7 @@ following("NO").
 *
 */
 +!perform_look_action <-
-	!perform_look_action_follow_agent
+	!do_algo
 	.
 	/*
 	<-
@@ -315,14 +361,14 @@ following("NO").
 +!setup_priorities <-
 	+task_priority("TASK_NONE",0);
 	+task_priority("TASK_GIVE_MEDICPAKS", 0);
-	+task_priority("TASK_GIVE_AMMOPAKS", -2000);
+	+task_priority("TASK_GIVE_AMMOPAKS", 2000);
 	+task_priority("TASK_GIVE_BACKUP", 0);
-	+task_priority("TASK_GET_OBJECTIVE",-1000);
-	+task_priority("TASK_ATTACK", -1000);
-	+task_priority("TASK_RUN_AWAY", -1500);
-	+task_priority("TASK_GOTO_POSITION", -750);
-	+task_priority("TASK_PATROLLING", -500);
-	+task_priority("TASK_WALKING_PATH", -1750);
+	+task_priority("TASK_GET_OBJECTIVE",1000);
+	+task_priority("TASK_ATTACK", 1000);
+	+task_priority("TASK_RUN_AWAY", 1500);
+	+task_priority("TASK_GOTO_POSITION", 7500);
+	+task_priority("TASK_PATROLLING", 500);
+	+task_priority("TASK_WALKING_PATH", 1750);
 	+task_priority("TASK_SQUARE_PATROL",5000).
 
 /////////////////////////////////
@@ -341,7 +387,19 @@ following("NO").
  */
 
 +!update_targets <-
-	!follow_agent( 100 );
+	?my_position(X, Y, Z);
+	if ( X == 0 & Z == 0 ){
+		!do_nothing;
+	}
+	else {
+		?vigil_direction(D);
+		.println("Searching for commander");
+		!search_commander(X,Z,D);
+		.println("pos: ", X, "  ", Y, "  ", Z);
+		if( D == 4 ) { -+vigil_direction(0); }
+		else { -+vigil_direction(D+1); }
+	}
+	.println("done");
 	?debug(Mode);
 	if ( Mode <= 1 ) {
 		.println("YOUR CODE FOR UPDATE_TARGETS GOES HERE.")
