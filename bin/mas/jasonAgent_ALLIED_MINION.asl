@@ -86,12 +86,13 @@ search_radius(3).
 			),
 			""
 		)
-	);
-	?tasks(Ta);
-	.println(Ta);
+	)
+	//~ ?tasks(Ta);
+	//~ .println(Ta);
 	.
 
-+!cmdpos(Equis,Igrega,Ceta)[source(S)] <-
++cmdpos(Equis,Igrega,Ceta)[source(S)] <-
+	.wait(5000);
 	.println( "The boss ", S, " is at [", Equis, ", ", Igrega, ", ", Ceta, "]");
 	!add_task(
 		task(
@@ -99,13 +100,14 @@ search_radius(3).
 			"TASK_GOTO_POSITION_ORDER",
 			M,
 			pos(
-				Equis + 50,
+				Equis + 5,
 				0,
-				Ceta - 50
+				Ceta - 5
 			),
 			""
 		)
 	);
+	.println("Going to boss' side")
 	.
 	
 +!do_algo .

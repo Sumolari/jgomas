@@ -61,9 +61,16 @@ in_pos(false).
 			""
 		)
 	);
-	+com_pos( math.round(X)+20, 0, math.round(Z)+20 );
 	
-	.println("com_pos UP: ", X);
+	RX = math.round(X)+20;
+	RZ = math.round(Z)+20;
+	+cmdpos( RX, 0, RZ );
+	.wait(5000);
+	.my_team("ALLIED", E1);
+	.concat( "cmdpos(", RX, ",", 0, ",", RZ, ")", Messg );
+	.send_msg_with_conversation_id(E1, tell, Messg, "INT");
+	
+	.println("message sent to ", E1);
 	
 	.
 /*
@@ -82,8 +89,7 @@ in_pos(false).
 	}
 	.
 
-+!check_the_pos .
-	
++!do_algo .
 
 /**
  * "Callback" que se ejecuta cada vez que el agente percibe objetos en su punto
@@ -280,7 +286,7 @@ in_pos(false).
 *
 */
 +!perform_look_action <-
-	!perform_look_action_follow_agent
+	!do_algo
 	.
 	/*
 	<-
@@ -371,12 +377,8 @@ in_pos(false).
 		!do_nothing;
 	}
 	else {
-		?vigil_direction(D);
-		.println("Searching for commander");
-		!search_commander(X,Z,D);
-		.println("pos: ", X, "  ", Y, "  ", Z);
-		if( D == 4 ) { -+vigil_direction(0); }
-		else { -+vigil_direction(D+1); }
+		!go_com_pos;
+		.println("commander pos: ", X, "  ", Y, "  ", Z);
 	}
 	?debug(Mode);
 	if ( Mode <= 1 ) {
