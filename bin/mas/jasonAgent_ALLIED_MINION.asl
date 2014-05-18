@@ -28,39 +28,23 @@ following("NO").
 go_now(0).
 vigil_direction(1).
 search_radius(3).
+cmdpos(0, 0, 0).
+canPatrol("NO").
 
 /**
  * Se pone a seguir a un agente del equipo dado.
  */
-+!order( X, Y, Z )[source(A)] <-
-	.println( "Gotta go to ", X, " ", Y, " ", Z );
-	-+following( TEAM );
-	!add_task(
-		task(
-			2999,
-			"TASK_GOTO_POSITION_3",
-			M,
-			pos(
-				X,
-				0,
-				Z
-			),
-			""
-		)
-	);
-	.
-
 +!do_nothing <-
-	?state(State);
-	?tasks(Tasks);
-	.println("State: ", State, "  Tasks:", Tasks);
+	//~ ?state(State);
+	//~ ?tasks(Tasks);
+	//~ .println("State: ", State, "  Tasks:", Tasks);
 	-+go_now(10);
 	.
 
 +!do_algo : go_now(N) & N > 0 <-
-	?state(State);
-	?tasks(Tasks);
-	.println("State algo: ", State, "  Tasks algo:", Tasks);
+	//~ ?state(State);
+	//~ ?tasks(Tasks);
+	//~ .println("State algo: ", State, "  Tasks algo:", Tasks);
 	-+state(standing);
 	-+tasks([]);
 	-+go_now(0);
@@ -69,10 +53,10 @@ search_radius(3).
 +!search_commander(X,Z,O) <-
 	?search_radius(R);
 	
-	if( O == 1 ) { Xp = X - R; Zp = Z; }
-	if( O == 2 ) { Xp = X; Zp = Z + R; }
-	if( O == 3 ) { Xp = X + R; Zp = Z; }
-	if( O == 4 ) { Xp = X; Zp = Z - R; }
+	if( O == 1 ) { Xp = math.round(X) - R; Zp = math.round(Z); }
+	if( O == 2 ) { Xp = math.round(X); Zp = math.round(Z) + R; }
+	if( O == 3 ) { Xp = math.round(X) + R; Zp = math.round(Z); }
+	if( O == 4 ) { Xp = math.round(X); Zp = math.round(Z) - R; }
 	
 	!add_task(
 		task(
@@ -92,22 +76,34 @@ search_radius(3).
 	.
 
 +cmdpos(Equis,Igrega,Ceta)[source(S)] <-
-	.wait(5000);
-	.println( "The boss ", S, " is at [", Equis, ", ", Igrega, ", ", Ceta, "]");
-	!add_task(
-		task(
-			9999,
-			"TASK_GOTO_POSITION_ORDER",
-			M,
-			pos(
-				Equis + 5,
-				0,
-				Ceta - 5
-			),
-			""
-		)
-	);
-	.println("Going to boss' side")
+	if( Equis > 0 & Ceta > 0 ){ //Substitute by source check
+		-+canPatrol("NO");
+		.println( "The boss ", S, " is at [", Equis, ", ", Igrega, ", ", Ceta, "]");
+		!add_task(
+			task(
+				9999,
+				"TASK_GOTO_POSITION_ORDER",
+				M,
+				pos(
+					Equis,
+					0,
+					Ceta
+				),
+				""
+			)
+		);
+		.println("Going to boss' side");
+	}
+	.
+	
++!askPatrol <-
+	?cmdpos(Cx, Cy, Cz);
+	?my_position(X, Y, Z);
+	RX = math.round(X);
+	RZ = math.round(Z);
+	if( Cx - RX < 2 & RX - Cx < 2 & Cz - RZ < 2 & RZ - Cz < 2 ){
+		-+canPatrol("YES");
+	}
 	.
 	
 +!do_algo .
@@ -394,14 +390,20 @@ search_radius(3).
 		!do_nothing;
 	}
 	else {
-		?vigil_direction(D);
-		.println("Searching for commander");
-		!search_commander(X,Z,D);
-		.println("pos: ", X, "  ", Y, "  ", Z);
-		if( D == 4 ) { -+vigil_direction(0); }
-		else { -+vigil_direction(D+1); }
+		RX = math.round(X);
+		RZ = math.round(Z);
+		?canPatrol(P);
+		if( P == "YES" ){
+			?vigil_direction(D);
+			//.println("Searching for commander");
+			!search_commander(RX,RZ,D);
+			//.println("pos: ", X, "  ", Y, "  ", Z);
+			if( D == 4 ) { -+vigil_direction(0); }
+			else { -+vigil_direction(D+1); }
+		}
+		else { !askPatrol; }
 	}
-	.println("done");
+	//.println("done");
 	?debug(Mode);
 	if ( Mode <= 1 ) {
 		.println("YOUR CODE FOR UPDATE_TARGETS GOES HERE.")

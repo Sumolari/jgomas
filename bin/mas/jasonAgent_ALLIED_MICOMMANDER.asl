@@ -27,6 +27,7 @@ type("CLASS_FIELDOPS").
 following("NO").
 go_now(0).
 in_pos(false).
+shouldContinue(yes).
 
 +!do_nothing <-
 	//~ ?state(State);
@@ -45,8 +46,11 @@ in_pos(false).
 	.
 
 +!go_com_pos <-
+	.wait(1000);
 	?my_position(X,Y,Z);
-	.println( "De camino a la posicion de comandancia ", X+20, " ", Y, " ", Z+20 );
+	RX = math.round(X)+30;
+	RZ = math.round(Z)+30;
+	.println( "De camino a la posicion de comandancia ", RX, " ", Y, " ", RZ );
 	
 	!add_task(
 		task(
@@ -54,25 +58,64 @@ in_pos(false).
 			"TASK_GOTO_POSITION_3",
 			M,
 			pos(
-				X + 20,
+				RX,
 				0,
-				Z + 20
+				RZ
 			),
 			""
 		)
 	);
 	
-	RX = math.round(X)+20;
-	RZ = math.round(Z)+20;
-	+cmdpos( RX, 0, RZ );
-	.wait(5000);
-	.my_team("ALLIED", E1);
-	.concat( "cmdpos(", RX, ",", 0, ",", RZ, ")", Messg );
-	.send_msg_with_conversation_id(E1, tell, Messg, "INT");
+	.my_team("ALLIED", E);
 	
-	.println("message sent to ", E1);
+	.length( E, L );
+	+auxC( 0 );
+	+waitingFor( L );
+	while ( auxC( C ) & C < L ) {
+		.nth( C, E, Target );
+		if ( C == 0 ) {
+			.concat( "cmdpos(", RX, ",", 0, ",", RZ + 20, ")", Messg );
+		}
+		if ( C == 1 ) {
+			.concat( "cmdpos(", RX + 20, ",", 0, ",", RZ, ")", Messg );
+		}
+		if ( C == 2 ) {
+			.concat( "cmdpos(", RX - 20, ",", 0, ",", RZ, ")", Messg );
+		}
+		if ( C == 3 ) {
+			.concat( "cmdpos(", RX + 30, ",", 0, ",", RZ - 20, ")", Messg );
+		}
+		if ( C == 4 ) {
+			.concat( "cmdpos(", RX - 30, ",", 0, ",", RZ - 20, ")", Messg );
+		}
+		if ( C == 5 ) {
+			.concat( "cmdpos(", RX + 10, ",", 0, ",", RZ - 20, ")", Messg );
+		}
+		if ( C == 6 ) {
+			.concat( "cmdpos(", RX - 10, ",", 0, ",", RZ - 20, ")", Messg );
+		}
+		//!log( [ "Ordered: ", Messg, " to ", Target, " (", C, ")" ], 2 );
+		.println( "Ordered: ", Messg, " to ", Target, " (", C, ")" );
+		.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
+		-+auxC( C + 1 );
+	}
 	
 	.
+
++soldierIsReady(X)[ source(X) ] <- 
+	?waitingFor(W);
+	-+waitingFor(W-1)
+	.
+
++waitingFor(0) <- 
+	.wait(2000);
+	-+shouldContinue( yes )
+	.
+
++waitingFor(W) : W > 0 <-
+	-+shouldContinue( no )
+	.
+
 /*
 +!command : in_pos(C) & C <-
 	
@@ -377,8 +420,11 @@ in_pos(false).
 		!do_nothing;
 	}
 	else {
-		!go_com_pos;
-		.println("commander pos: ", X, "  ", Y, "  ", Z);
+		?shouldContinue(Con);
+		if( Con == yes ){
+			!go_com_pos;
+		}
+		//.println("commander pos: ", X, "  ", Y, "  ", Z);
 	}
 	?debug(Mode);
 	if ( Mode <= 1 ) {
