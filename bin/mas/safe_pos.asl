@@ -8,10 +8,8 @@
 	+fw_new_pos( X, Z );
 	// Reset position's validity belief.
 	check_position( pos( X, 0, Z ) );
-	?position( V );
 	// While the position is not valid...
 	while ( position( invalid ) ) {
-		?fw_new_pos( Nx, Nz );
 		// While we can decrease X coordinate.
 		while ( position( invalid ) & fw_new_pos( I, _ ) & I > 0 ) {
 			// Retrieve the position being checked.
@@ -20,13 +18,12 @@
 			+fw_new_pos_fixed_x( Mediumnz );
 			// While we can decrease Z coordinate.
 			while ( position( invalid ) & fw_new_pos_fixed_x( N ) & N > 0 ) {
+				// Retrieve auxiliar variable.
 				?fw_new_pos_fixed_x( Innernxz );
 				// Forget about previously invalid position.
 				-position( invalid );
-				// Try reducing Z by 1.
-				// Check position retrieved. Note that we maintain Y coord.
+				// Try reducing Z by 1. Check position retrieved.
 				check_position( pos( Mediumnx, 0, Innernxz - 1 ) );
-				?position( P );
 				// Store new value of auxiliar variable.
 				-+fw_new_pos_fixed_x( Innernxz - 1 );
 			}
@@ -44,13 +41,15 @@
 		// Store new position to be checked.
 		-+fw_new_pos( Ax, Az );
 	}
+	// Retrieve final valid position.
 	?fw_new_pos( Nx, Nz );
+	// Store final valid position in a belief.
+	-+safe_pos( Nx + 1, Y, Nz + 1 );
 	// Forget about position validity.
 	-position( valid );
 	// Forget about position to be checked.
 	?fw_new_pos( RemoveX, RemoveZ );
 	-fw_new_pos( RemoveX, RemoveZ );
 	// Return valid position with belief named as function.
-	-+safe_pos( Nx + 1, Y, Nz + 1 );
 	-position( valid )
 	.
