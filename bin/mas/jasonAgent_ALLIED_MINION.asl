@@ -12,6 +12,10 @@ type("CLASS_FIELDOPS").
 	include("jgomas.asl")
 }
 
+{
+	include("framework.asl")
+}
+
 // Plans
 
 /*******************************
@@ -27,9 +31,8 @@ type("CLASS_FIELDOPS").
 following("NO").
 go_now(0).
 vigil_direction(1).
-search_radius(3).
+search_radius(4).
 cmdpos(0, 0, 0).
-canPatrol("NO").
 
 /**
  * Se pone a seguir a un agente del equipo dado.
@@ -50,15 +53,21 @@ canPatrol("NO").
 	-+go_now(0);
 	.
 
-+!search_commander(X,Z,O) <-
++!search_commander(O) : shouldContinue("YES") <-
 	?search_radius(R);
+	?my_position(X, Y, Z);
+	RX = math.round(X);
+	RZ = math.round(Z);
 	
-	if( O == 1 ) { Xp = math.round(X) - R; Zp = math.round(Z); }
-	if( O == 2 ) { Xp = math.round(X); Zp = math.round(Z) + R; }
-	if( O == 3 ) { Xp = math.round(X) + R; Zp = math.round(Z); }
-	if( O == 4 ) { Xp = math.round(X); Zp = math.round(Z) - R; }
+	if( O == 4 ) { -+vigil_direction(1); }
+	else { -+vigil_direction(O+1); }
 	
-	!add_task(
+	if( O == 1 ) { Xp = RX - R; Zp = RZ; }
+	if( O == 2 ) { Xp = RX; Zp = RZ + R; }
+	if( O == 3 ) { Xp = RX + R; Zp = RZ; }
+	if( O == 4 ) { Xp = RX; Zp = RZ - R; }
+	
+	!fw_add_task(
 		task(
 			7501,
 			"TASK_GOTO_POSITION_2",
@@ -74,12 +83,16 @@ canPatrol("NO").
 	//~ ?tasks(Ta);
 	//~ .println(Ta);
 	.
+	
++!search_commander(O) <-
+	!check_task_end
+	.
 
 +cmdpos(Equis,Igrega,Ceta)[source(S)] <-
 	if( Equis > 0 & Ceta > 0 ){ //Substitute by source check
-		-+canPatrol("NO");
+		-+tasks([]);
 		.println( "The boss ", S, " is at [", Equis, ", ", Igrega, ", ", Ceta, "]");
-		!add_task(
+		!fw_add_task(
 			task(
 				9999,
 				"TASK_GOTO_POSITION_ORDER",
@@ -96,15 +109,6 @@ canPatrol("NO").
 	}
 	.
 	
-+!askPatrol <-
-	?cmdpos(Cx, Cy, Cz);
-	?my_position(X, Y, Z);
-	RX = math.round(X);
-	RZ = math.round(Z);
-	if( Cx - RX < 2 & RX - Cx < 2 & Cz - RZ < 2 & RZ - Cz < 2 ){
-		-+canPatrol("YES");
-	}
-	.
 	
 +!do_algo .
 
@@ -125,7 +129,7 @@ canPatrol("NO").
 		if ( Equipo == TEAM ) {
 			.nth( 6, A, Posicion);
 			.println( "Voy hacia: ", Posicion );
-			!add_task(
+			!fw_add_task(
 				task(
 					3000,
 					"TASK_GOTO_POSITION_2",
@@ -390,18 +394,10 @@ canPatrol("NO").
 		!do_nothing;
 	}
 	else {
-		RX = math.round(X);
-		RZ = math.round(Z);
-		?canPatrol(P);
-		if( P == "YES" ){
-			?vigil_direction(D);
-			//.println("Searching for commander");
-			!search_commander(RX,RZ,D);
-			//.println("pos: ", X, "  ", Y, "  ", Z);
-			if( D == 4 ) { -+vigil_direction(0); }
-			else { -+vigil_direction(D+1); }
-		}
-		else { !askPatrol; }
+		?vigil_direction(D);
+		//.println("Searching for commander");
+		!search_commander(D);
+		//.println("pos: ", X, "  ", Y, "  ", Z);
 	}
 	//.println("done");
 	?debug(Mode);
