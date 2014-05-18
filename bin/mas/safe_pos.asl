@@ -1,7 +1,12 @@
-
-// @todo Check positions by increasing coordinates.
 // Given X, Y and Z, computes the nearest valid position.
 // @results +safe_pos( Nx, Y, Nz )
+// Usage:
+/*
+	!safe_pos( 300, 0, 30 );
+	?safe_pos( X, Y, Z );
+	.println( "It is safe to go to pos( ", X, ", ", Y, ", ", Z, " )" )
+*/
+// @todo Check positions by increasing coordinates.
 +!safe_pos( X, Y, Z )
 	<-
 	// Internal belief to store the position being checked.
