@@ -12,6 +12,10 @@ type("CLASS_FIELDOPS").
 	include("jgomas.asl")
 }
 
+{
+	include("framework.asl")
+}
+
 // Plans
 
 /*******************************
@@ -27,7 +31,7 @@ type("CLASS_FIELDOPS").
 following("NO").
 go_now(0).
 in_pos(false).
-shouldContinue(yes).
+everybodyReady("YES").
 
 +!do_nothing <-
 	//~ ?state(State);
@@ -42,17 +46,17 @@ shouldContinue(yes).
 	//~ .println("State algo: ", State, "  Tasks algo:", Tasks);
 	-+state(standing);
 	-+tasks([]);
-	-+go_now(0);
+	-+go_now(0)
 	.
 
-+!go_com_pos <-
++!go_com_pos : shouldContinue("YES") & everybodyReady("YES") <-
 	.wait(1000);
 	?my_position(X,Y,Z);
 	RX = math.round(X)+30;
 	RZ = math.round(Z)+30;
 	.println( "De camino a la posicion de comandancia ", RX, " ", Y, " ", RZ );
 	
-	!add_task(
+	!fw_add_task(
 		task(
 			7500,
 			"TASK_GOTO_POSITION_3",
@@ -101,6 +105,10 @@ shouldContinue(yes).
 	}
 	
 	.
+	
++!go_com_pos <-
+	!check_task_end
+	.
 
 +soldierIsReady(X)[ source(X) ] <- 
 	?waitingFor(W);
@@ -109,11 +117,11 @@ shouldContinue(yes).
 
 +waitingFor(0) <- 
 	.wait(2000);
-	-+shouldContinue( yes )
+	-+everybodyReady( "YES" )
 	.
 
 +waitingFor(W) : W > 0 <-
-	-+shouldContinue( no )
+	-+everybodyReady( "NO" )
 	.
 
 /*
@@ -151,7 +159,7 @@ shouldContinue(yes).
 		if ( Equipo == TEAM ) {
 			.nth( 6, A, Posicion);
 			//.println( "Voy hacia: ", Posicion );
-			!add_task(
+			!fw_add_task(
 				task(
 					3000,
 					"TASK_GOTO_POSITION_2",
@@ -420,10 +428,7 @@ shouldContinue(yes).
 		!do_nothing;
 	}
 	else {
-		?shouldContinue(Con);
-		if( Con == yes ){
-			!go_com_pos;
-		}
+		!go_com_pos;
 		//.println("commander pos: ", X, "  ", Y, "  ", Z);
 	}
 	?debug(Mode);
