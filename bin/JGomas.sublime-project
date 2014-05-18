@@ -1,0 +1,25 @@
+{
+	"folders": [ {
+		"name": "ASL",
+		"path": "asls",
+		"folder_exclude_patterns": [ "lib", "classes" ],
+		"file_exclude_patterns": [ "*general*", "*captain*", "*colonel*", "*major*", "*command.asl" ],
+		"file_include_patterns": [ "*.asl" ]
+	}, {
+		"name": "Ranks",
+		"path": "ranks",
+		"folder_exclude_patterns": [ "lib", "classes" ],
+		"file_exclude_patterns": [],
+		"file_include_patterns": [ "*general*", "*captain*", "*colonel*", "*major*", "*command.asl" ]
+	}, {
+		"name": "Launcher",
+		"path": "launchers",
+		"folder_exclude_patterns": [ "lib", "classes" ],
+		"file_include_patterns": [ "jgomas_launcher*.bat" ]
+	}, {
+		"name": "Manager",
+		"path": "managers",
+		"folder_exclude_patterns": [ "lib", "classes" ],
+		"file_include_patterns": [ "jgomas_manager*.bat" ]
+	} ]
+}
