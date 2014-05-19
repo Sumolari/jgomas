@@ -32,7 +32,8 @@ following("NO").
 go_now(0).
 vigil_direction(1).
 search_radius(4).
-cmdpos(0, 0, 0).
+//cmdpos(0, 0, 0).
+alreadySaid("NO").
 
 /**
  * Se pone a seguir a un agente del equipo dado.
@@ -90,6 +91,7 @@ cmdpos(0, 0, 0).
 
 +cmdpos(Equis,Igrega,Ceta)[source(S)] <-
 	if( Equis > 0 & Ceta > 0 ){ //Substitute by source check
+		+commander(S);
 		-+tasks([]);
 		.println( "The boss ", S, " is at [", Equis, ", ", Igrega, ", ", Ceta, "]");
 		!fw_add_task(
@@ -106,11 +108,20 @@ cmdpos(0, 0, 0).
 			)
 		);
 		.println("Going to boss' side");
+		-+alreadySaid("NO");
 	}
 	.
 	
 	
 +!do_algo .
+
++shouldContinue("YES") : alreadySaid("NO") & cmdpos(Cx, Cy, Cz) & Cx > 0 & Cz > 0 <- 
+	?commander( A );
+	.concat( "soldierIsReady", Messg );
+	.println("Sending ", Messg, " to ", A);
+	.send_msg_with_conversation_id( A, tell, Messg, "INT" );
+	-+alreadySaid("YES")
+	.
 
 /**
  * "Callback" que se ejecuta cada vez que el agente percibe objetos en su punto

@@ -110,13 +110,16 @@ everybodyReady("YES").
 	!check_task_end
 	.
 
-+soldierIsReady(X)[ source(X) ] <- 
++soldierIsReady[source(V)] <- 
 	?waitingFor(W);
-	-+waitingFor(W-1)
+	-+waitingFor(W-1);
+	.println(W-1, " more to go!");
+	-soldierIsReady[source(V)]
 	.
 
 +waitingFor(0) <- 
 	.wait(2000);
+	-waitingFor(0);
 	-+everybodyReady( "YES" )
 	.
 
@@ -428,6 +431,8 @@ everybodyReady("YES").
 		!do_nothing;
 	}
 	else {
+		//?everybodyReady(R);
+		//.println(R);
 		!go_com_pos;
 		//.println("commander pos: ", X, "  ", Y, "  ", Z);
 	}
