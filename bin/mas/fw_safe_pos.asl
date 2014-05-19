@@ -1,5 +1,5 @@
 // Given X, Y and Z, computes the nearest valid position.
-// @results +safe_pos( Nx, Y, Nz )
+// @results +fw_safe_pos( Nx, Y, Nz )
 // Usage:
 /*
 	!fw_safe_pos( 300, 0, 30 );
