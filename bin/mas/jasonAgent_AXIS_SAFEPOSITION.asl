@@ -16,7 +16,7 @@ patrollingRadius(64).
 
 { include("jgomas.asl") }
 
-{ include( "safe_pos.asl" ) }
+{ include( "fw_safe_pos.asl" ) }
 
 
 // Plans
@@ -208,9 +208,9 @@ patrollingRadius(64).
  */
 +!update_targets
 	<-
-	!safe_pos( 300, 0, 30 );
-	?safe_pos( X, Y, Z );
-	.println( "It is safe to go to pos( ", X, ", ", Y, ", ", Z, " )" )
+	!fw_safe_pos( 300, 0, 30 );
+	?fw_safe_pos( X, Y, Z );
+	.println( "Ie_t is safe to go to pos( ", X, ", ", Y, ", ", Z, " )" )
 	.
 
 

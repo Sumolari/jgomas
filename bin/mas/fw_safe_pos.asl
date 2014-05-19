@@ -2,12 +2,12 @@
 // @results +safe_pos( Nx, Y, Nz )
 // Usage:
 /*
-	!safe_pos( 300, 0, 30 );
-	?safe_pos( X, Y, Z );
+	!fw_safe_pos( 300, 0, 30 );
+	?fw_safe_pos( X, Y, Z );
 	.println( "It is safe to go to pos( ", X, ", ", Y, ", ", Z, " )" )
 */
 // @todo Check positions by increasing coordinates.
-+!safe_pos( X, Y, Z )
++!fw_safe_pos( X, Y, Z )
 	<-
 	// Internal belief to store the position being checked.
 	+fw_new_pos( X, Z );
@@ -49,7 +49,7 @@
 	// Retrieve final valid position.
 	?fw_new_pos( Nx, Nz );
 	// Store final valid position in a belief.
-	-+safe_pos( Nx + 1, Y, Nz + 1 );
+	-+fw_safe_pos( Nx + 1, Y, Nz + 1 );
 	// Forget about position validity.
 	-position( valid );
 	// Forget about position to be checked.
