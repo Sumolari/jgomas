@@ -148,8 +148,14 @@ patrollingRadius(64).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!perform_look_action .
-/// <- ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR PERFORM_LOOK_ACTION GOES HERE.") }.
++!perform_look_action
+	<-
+	?fovObjects( FOVObjects );
+	!fw_nearest( FOVObjects );
+	?fw_nearest( _, _, Distance );
+	.println( "Nearest agent is at ", Distance, " units of distance" );
+	/// <- ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR PERFORM_LOOK_ACTION GOES HERE.") }.
+	.
 
 /**
  * Action to do if this agent cannot shoot.

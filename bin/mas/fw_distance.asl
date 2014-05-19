@@ -22,7 +22,7 @@
 	?fw_nearest( Agent, Position, Distance );
 	.println( "Nearest agent is ", Agent, " who is at ", Position, " (distance ", Distance, ")"  );
 */
-+!fw_nearest( Agents ) : .length( Agents, Length ) & Length > 0
++!fw_nearest( Agents ) //: .length( Agents, Length ) & Length > 0
 	<-
 	// Save an arbitrary solution.
 	-+fw_nearest( yolo, pos( -1, -1, -1 ), 9999 );
@@ -48,11 +48,13 @@
 			// Save new nearest agent.
 			-+fw_nearest( Target, Targetposition, D );
 		}
+		// Update counter.
+		-+fwn_aux_c( C + 1 );
 	}
 	// Clean auxiliar beliefs.
 	-+fwn_aux_c( 0 );
 	-fwn_aux_c( 0 )
-	.
 
 // Fallback.
-+!fw_nearest( Agents ) .
+//+!fw_nearest( Agents ) .
+	.
