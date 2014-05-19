@@ -4,7 +4,7 @@
 /*
 	!fw_safe_pos( 300, 0, 30 );
 	?fw_safe_pos( X, Y, Z );
-	.println( "It is safe to go to pos( ", X, ", ", Y, ", ", Z, " )" )
+	.println( "It is safe to go to pos( ", X, ", ", Y, ", ", Z, " )" );
 */
 // @todo Check positions by increasing coordinates.
 +!fw_safe_pos( X, Y, Z )
