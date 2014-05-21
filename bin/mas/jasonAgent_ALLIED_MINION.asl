@@ -29,30 +29,13 @@ type("CLASS_FIELDOPS").
 /////////////////////////////////
 
 following("NO").
-go_now(0).
 vigil_direction(1).
 search_radius(4).
-//cmdpos(0, 0, 0).
 alreadySaid("NO").
 
 /**
  * Se pone a seguir a un agente del equipo dado.
  */
-+!do_nothing <-
-	//~ ?state(State);
-	//~ ?tasks(Tasks);
-	//~ .println("State: ", State, "  Tasks:", Tasks);
-	-+go_now(10);
-	.
-
-+!do_algo : go_now(N) & N > 0 <-
-	//~ ?state(State);
-	//~ ?tasks(Tasks);
-	//~ .println("State algo: ", State, "  Tasks algo:", Tasks);
-	-+state(standing);
-	-+tasks([]);
-	-+go_now(0);
-	.
 
 +!search_commander(O) : shouldContinue("YES") <-
 	?search_radius(R);
@@ -111,9 +94,6 @@ alreadySaid("NO").
 		-+alreadySaid("NO");
 	}
 	.
-	
-	
-+!do_algo .
 
 +shouldContinue("YES") : alreadySaid("NO") & cmdpos(Cx, Cy, Cz) & Cx > 0 & Cz > 0 <- 
 	?commander( A );
@@ -313,17 +293,14 @@ alreadySaid("NO").
 * <em> It's very useful to overload this plan. </em>
 *
 */
-+!perform_look_action <-
-	!do_algo
++!perform_look_action : position_bug <-
+	-+state(standing);
+	-+tasks([]);
+	-position_bug
 	.
-	/*
-	<-
-	?debug(Mode);
-	if ( Mode <= 1 ) {
-		.println("YOUR CODE FOR PERFORM_LOOK_ACTION GOES HERE.")
-	}
-	.
-	*/
+	
++!perform_look_action .
+	// can overload again
 
 /**
 * Action to do if this agent cannot shoot.
@@ -402,7 +379,7 @@ alreadySaid("NO").
 +!update_targets <-
 	?my_position(X, Y, Z);
 	if ( X == 0 & Z == 0 ){
-		!do_nothing;
+		+position_bug;
 	}
 	else {
 		?vigil_direction(D);

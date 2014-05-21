@@ -29,25 +29,8 @@ type("CLASS_FIELDOPS").
 /////////////////////////////////
 
 following("NO").
-go_now(0).
 in_pos(false).
 everybodyReady("YES").
-
-+!do_nothing <-
-	//~ ?state(State);
-	//~ ?tasks(Tasks);
-	//~ .println("State: ", State, "  Tasks:", Tasks);
-	-+go_now(10);
-	.
-
-+!do_algo : go_now(N) & N > 0 <-
-	//~ ?state(State);
-	//~ ?tasks(Tasks);
-	//~ .println("State algo: ", State, "  Tasks algo:", Tasks);
-	-+state(standing);
-	-+tasks([]);
-	-+go_now(0)
-	.
 
 +!go_com_pos : shouldContinue("YES") & everybodyReady("YES") <-
 	.wait(1000);
@@ -143,7 +126,6 @@ everybodyReady("YES").
 	}
 	.
 
-+!do_algo .
 
 /**
  * "Callback" que se ejecuta cada vez que el agente percibe objetos en su punto
@@ -339,17 +321,14 @@ everybodyReady("YES").
 * <em> It's very useful to overload this plan. </em>
 *
 */
-+!perform_look_action <-
-	!do_algo
++!perform_look_action : position_bug <-
+	-+state(standing);
+	-+tasks([]);
+	-position_bug
 	.
-	/*
-	<-
-	?debug(Mode);
-	if ( Mode <= 1 ) {
-		.println("YOUR CODE FOR PERFORM_LOOK_ACTION GOES HERE.")
-	}
-	.
-	*/
+	
++!perform_look_action .
+	// can overload again
 
 /**
 * Action to do if this agent cannot shoot.
@@ -428,7 +407,7 @@ everybodyReady("YES").
 +!update_targets <-
 	?my_position(X, Y, Z);
 	if ( X == 0 & Z == 0 ){
-		!do_nothing;
+		+position_bug;
 	}
 	else {
 		//?everybodyReady(R);
