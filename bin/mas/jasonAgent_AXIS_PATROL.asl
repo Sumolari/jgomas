@@ -20,6 +20,26 @@ patrollingRadius(64).
 
 { include( "fw_patrol.asl" ) }
 
+go_now(0).
+
++!do_nothing <-
+	//~ ?state(State);
+	//~ ?tasks(Tasks);
+	//~ .println("State: ", State, "  Tasks:", Tasks);
+	-+go_now(10);
+	.
+
++!do_algo : go_now(N) & N > 0 <-
+	//~ ?state(State);
+	//~ ?tasks(Tasks);
+	//~ .println("State algo: ", State, "  Tasks algo:", Tasks);
+	-+state(standing);
+	-+tasks([]);
+	-+go_now(0)
+	.
+
++!do_algo .
+
 
 // Plans
 
@@ -151,6 +171,8 @@ patrollingRadius(64).
  *
  */
 +!perform_look_action
+	<-
+	!do_algo
 	/// <- ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR PERFORM_LOOK_ACTION GOES HERE.") }.
 	.
 
@@ -209,7 +231,22 @@ patrollingRadius(64).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!update_targets .
++!update_targets
+	<-
+	?my_position(X, Y, Z);
+	if ( X == 0 & Z == 0 ){
+		!do_nothing;
+		+my_original_position( 0, 0, 0);
+	}
+	else {
+		if ( my_original_position( 0, 0, 0 ) ) {
+			?my_position( Myx, Myy, Myz );
+			-+my_original_position( Myx, Myy, Myz );
+		}
+		?my_original_position( Myx, Myy, Myz );
+		!fw_patrol_around( pos( Myx, Myy, Myz ), 5 );
+	}
+	.
 
 
 /////////////////////////////////
@@ -319,6 +356,5 @@ patrollingRadius(64).
 
 +!init
    <-
-   !fw_patrol( [ pos( 175, 0, 175 ), pos( 200, 0, 175 ), pos( 200, 0, 200 ), pos( 175, 0, 200 ) ] );
    ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR init GOES HERE.")}.
 

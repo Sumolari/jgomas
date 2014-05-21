@@ -57,3 +57,27 @@
 	?fw_patrol_c( Fc );
 	-fw_patrol_c( Fc );
 	.
+
+// Start an infinite square patrol of radius N around given point.
+//
+// @warning This method alters enqueued tasks!
+//
+// Usage:
+/*
+	?my_position( Myx, Myy, Myz );
+	!fw_patrol_around( pos( Myx, Myy, Myz ), 5 );
+*/
++!fw_patrol_around( pos( X, Y, Z ), N )
+	<-
+	// Add tasks only if there are no other tasks enqueued.
+	if ( tasks( [] ) ) {
+		//
+		//.println( [ pos( X - N, Y, Z - N ), pos( X + N, Y, Z - N ), pos( X + N, Y, Z + N ), pos( X - N, Y, Z + N ) ]  );
+		// Start patrol.
+		!fw_patrol( [ pos( X - N, Y, Z - N ), pos( X + N, Y, Z - N ), pos( X + N, Y, Z + N ), pos( X - N, Y, Z + N ) ] );
+		.println( "enqueued" );
+		-+state(standing);
+	}
+	.
+
+
