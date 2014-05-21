@@ -69,13 +69,13 @@
 */
 +!fw_patrol_around( pos( X, Y, Z ), N )
 	<-
+	// Get list of tasks.
+	?tasks( Tareas );
+	.length( Tareas, L );
 	// Add tasks only if there are no other tasks enqueued.
-	if ( tasks( [] ) ) {
-		//
-		//.println( [ pos( X - N, Y, Z - N ), pos( X + N, Y, Z - N ), pos( X + N, Y, Z + N ), pos( X - N, Y, Z + N ) ]  );
+	if ( L < 2 ) {
 		// Start patrol.
 		!fw_patrol( [ pos( X - N, Y, Z - N ), pos( X + N, Y, Z - N ), pos( X + N, Y, Z + N ), pos( X - N, Y, Z + N ) ] );
-		.println( "enqueued" );
 		-+state(standing);
 	}
 	.

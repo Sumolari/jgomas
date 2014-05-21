@@ -172,7 +172,23 @@ go_now(0).
  */
 +!perform_look_action
 	<-
-	!do_algo
+	!do_algo;
+	?fovObjects( FOVObjects );
+	.length( FOVObjects, L );
+	-+patrolauxc( 0 );
+	while( patrolauxc( C ) & C < L ) {
+		.nth( C, FOVObjects, Target );
+		.nth( 2, Target, Team );
+		if ( Team == 1003 ) {
+			.nth( 6, Target, Destination );
+			-+flag_original_position( Destination );
+			?flag_original_position( pos( X, Y, Z ) );
+			-flag_original_position( Destination );
+			+flag_original_position( X, Y, Z );
+			!fw_patrol_around( pos( X, Y, Z ), 5 );
+		}
+		-+patrolauxc( C + 1 );
+	}
 	/// <- ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR PERFORM_LOOK_ACTION GOES HERE.") }.
 	.
 
@@ -231,22 +247,7 @@ go_now(0).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!update_targets
-	<-
-	?my_position(X, Y, Z);
-	if ( X == 0 & Z == 0 ){
-		!do_nothing;
-		+my_original_position( 0, 0, 0);
-	}
-	else {
-		if ( my_original_position( 0, 0, 0 ) ) {
-			?my_position( Myx, Myy, Myz );
-			-+my_original_position( Myx, Myy, Myz );
-		}
-		?my_original_position( Myx, Myy, Myz );
-		!fw_patrol_around( pos( Myx, Myy, Myz ), 5 );
-	}
-	.
++!update_targets .
 
 
 /////////////////////////////////
