@@ -54,7 +54,7 @@
 	!fw_distance( pos( X, Y, Z ), pos( Myx, Myy, Myz ) );
 	?fw_distance( Dist );
 	// If distance is lower than threshold.
-	if ( Dist < 75 ) {
+	if ( Dist < 125 & Ammo < 30 ) {
 		// Give ammo.
 		!add_task( task( "TASK_GIVE_AMMOPAKS", M, pos( X, Y, Z ), "" ) );
 		//.send(M, tell, "cfa_agree");
@@ -83,7 +83,7 @@
 	!fw_distance( pos( X, Y, Z ), pos( Myx, Myy, Myz ) );
 	?fw_distance( Dist );
 	// If distance is lower than threshold.
-	if ( Dist < 75 ) {
+	if ( Dist < 75 & Salud < 50 ) {
 		// Give medpack.
 		!add_task( task( "TASK_GIVE_MEDICPAKS", M, pos( X, Y, Z ), "" ) );
 		// .send(M, tell, "cfm_agree");
