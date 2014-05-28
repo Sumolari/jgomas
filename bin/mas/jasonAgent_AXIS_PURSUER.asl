@@ -26,6 +26,31 @@ patrollingRadius(10).
 *
 *******************************/
 
+
+/////////////////////////////////
+/// CUSTOM ACTIONS
+/////////////////////////////////
+///**
+//keeper(0).
++!keeper <-
+	//?keeper(P);
+	?objective(ObjectiveX, ObjectiveY, ObjectiveZ);
+	?my_position(X,Y,Z);
+	.println( "Estoy en X:", X, " Y:", Y, " Z:", Z, " P:", P );
+	.println( "Deberia ir a la bandera en (", ObjectiveX, ",", ObjectiveY,",", ObjectiveZ,")" );
+	!add_task(
+		task(
+			3000,
+			"TASK_GOTO_POSITION",
+			M,
+			pos(
+				ObjectiveX, ObjectiveY, ObjectiveZ
+			),
+			""
+		)
+	);
+	.
+//*/
 /////////////////////////////////
 //  GET AGENT TO AIM
 /////////////////////////////////
@@ -46,7 +71,7 @@ patrollingRadius(10).
         .length(FOVObjects, Length);
 
         ?debug(Mode); if (Mode<=1) { .println("El numero de objetos es:", Length); }
-
+		//printf("ye que pasa");
         if (Length > 0) {
 		    +bucle(0);
 
@@ -204,8 +229,11 @@ patrollingRadius(10).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!update_targets
-	<-	?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR UPDATE_TARGETS GOES HERE.") }.
++!update_targets<-
+
+	!keeper;
+	?debug(Mode); 
+	if (Mode<=1) { .println("YOUR CODE FOR UPDATE_TARGETS GOES HERE.") }.
 
 
 /////////////////////////////////
