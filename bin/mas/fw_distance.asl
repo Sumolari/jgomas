@@ -111,14 +111,14 @@
 	} else {
 		// Compute desired location.
 		if ( Myx > Tx ) {
-			-+fw_follow_dest_x( Myx + 1 );
-		} else {
 			-+fw_follow_dest_x( Myx - 1 );
+		} else {
+			-+fw_follow_dest_x( Myx + 1 );
 		}
 		if ( Myz > Tz ) {
-			-+fw_follow_dest_z( Tz + 1 );
+			-+fw_follow_dest_z( Myz - 1 );
 		} else {
-			-+fw_follow_dest_z( Tz - 1 );
+			-+fw_follow_dest_z( Myz + 1 );
 		}
 		// Extract desired location.
 		?fw_follow_dest_x( Dx );
