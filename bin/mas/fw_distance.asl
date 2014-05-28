@@ -59,10 +59,8 @@
 	.
 
 // Given an Agent, returns the task to follow that agent with a threshold.
-// Note that this plan will return -1 if it is not possible to find such a
-// position.
 //
-// @results +fw_follow( Task ) || +fw_follow( -1 )
+// @results +fw_follow( Task )
 //
 // Usage:
 /*
@@ -70,12 +68,6 @@
 	?fw_follow( Task );
 	!add_task( Task )
 */
-
-// In case an invalid agent is given.
-+!fw_follow( -1, Threshold )
-	<-
-	-+fw_follow( -1 );
-	.
 
 +!fw_follow( Agent, Threshold )
 	<-
@@ -117,6 +109,26 @@
 	if ( Newdistance < Previousdistance ) {
 		-+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Fx, Fy, Fz ), "" ) );
 	} else {
-		-+fw_follow( -1 );
+		// Compute desired location.
+		if ( Myx > Tx ) {
+			-+fw_follow_dest_x( Myx - 1 );
+		} else {
+			-+fw_follow_dest_x( Myx + 1 );
+		}
+		if ( Myz > Tz ) {
+			-+fw_follow_dest_z( Myz - 1 );
+		} else {
+			-+fw_follow_dest_z( Myz + 1 );
+		}
+		// Extract desired location.
+		?fw_follow_dest_x( Dx );
+		?fw_follow_dest_z( Dz );
+		// Clean beliefs.
+		-fw_follow_dest_x( Dx );
+		-fw_follow_dest_z( Dz );
+		// Get nearest valid position.
+		!fw_safe_pos( Dx, 0, Dz );
+		?fw_safe_pos( Fx, Fy, Fz );
+		-+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Dx, 0, Dz ), "" ) );
 	}
 	.
