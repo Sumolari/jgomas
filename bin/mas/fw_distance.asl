@@ -80,9 +80,9 @@
 +!fw_follow( Agent, Threshold )
 	<-
 	// Extract agent position.
-	.println( Agent );
+	//.println( Agent );
 	.nth( 6, Agent, Pos );
-	.println( Pos );
+	//.println( Pos );
 	-+fw_follow( Pos );
 	?fw_follow( pos( Tx, Ty, Tz ) );
 	-fw_follow( Pos );
