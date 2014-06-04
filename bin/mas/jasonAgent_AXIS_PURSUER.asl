@@ -11,20 +11,45 @@ type("CLASS_SOLDIER").
 // Value of "closeness" to the Flag, when patrolling in defense
 patrollingRadius(10).
 
-
-
-
 { include("jgomas.asl") }
 
+{ include("framework.asl") }
+
+{ include("fw_communication.asl") }
 
 // Plans
-
 
 /*******************************
 *
 * Actions definitions
 *
 *******************************/
+
+/////////////////////////////////
+/// CUSTOM ACTIONS
+/////////////////////////////////
+
+//keeper(0).
+
++!keeper
+	<-
+	//?keeper(P);
+	?objective( Ox, Oy, Oz );
+	?my_position( X, Y, Z );
+	.println( "Estoy en X:", X, " Y:", Y, " Z:", Z, " P:", P );
+	.println( "Deberia ir a la bandera en (", Ox, ",", Oy, ",", Oz, ")" );
+	!add_task(
+		task(
+			3000,
+			"TASK_GOTO_POSITION",
+			M,
+			pos(
+				Ox, Oy, Oz
+			),
+			""
+		)
+	)
+	.
 
 /////////////////////////////////
 //  GET AGENT TO AIM
@@ -40,55 +65,74 @@ patrollingRadius(10).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!get_agent_to_aim
-    <-  ?debug(Mode); if (Mode<=2) { .println("Looking for agents to aim."); }
-        ?fovObjects(FOVObjects);
-        .length(FOVObjects, Length);
 
-        ?debug(Mode); if (Mode<=1) { .println("El numero de objetos es:", Length); }
++!get_agent_to_aim <-
+	?debug(Mode);
+	if ( Mode <= 2 ) {
+		.println( "Looking for agents to aim." );
+	}
+	?fovObjects(FOVObjects);
+	.length( FOVObjects, Length );
 
-        if (Length > 0) {
-		    +bucle(0);
+	?debug(Mode);
+	if ( Mode <= 1 ) {
+		.println( "El numero de objetos es:", Length );
+	}
 
-            -+aimed("false");
+	if ( Length > 0 ) {
+		+bucle(0);
+		-+aimed("false");
 
-            while (aimed("false") & bucle(X) & (X < Length)) {
+		while ( aimed("false") & bucle(X) & ( X < Length ) ) {
 
-                //.println("En el bucle, y X vale:", X);
+			//.println("En el bucle, y X vale:", X);
 
-                .nth(X, FOVObjects, Object);
-                // Object structure
-                // [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-                .nth(2, Object, Type);
+			.nth( X, FOVObjects, Object );
+			// Object structure
+			// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+			.nth( 2, Object, Type );
 
-                ?debug(Mode); if (Mode<=2) { .println("Objeto Analizado: ", Object); }
+			?debug(Mode);
+			if ( Mode <= 2 ) {
+				.println( "Objeto Analizado: ", Object );
+			}
 
-                if (Type > 1000) {
-                    ?debug(Mode); if (Mode<=2) { .println("I found some object."); }
-                } else {
-                    // Object may be an enemy
-                    .nth(1, Object, Team);
-                    ?my_formattedTeam(MyTeam);
+			if ( Type > 1000 ) {
+				?debug(Mode);
+				if ( Mode <= 2 ) {
+					.println( "I found some object." );
+				}
+			} else {
+				// Object may be an enemy
+				.nth(1, Object, Team);
+				?my_formattedTeam(MyTeam);
 
-                    if (Team == 100) {  // Only if I'm AXIS
+				if ( Team == 100 ) {  // Only if I'm ALLIED
+					?debug(Mode);
+					if (Mode<=2) {
+						.println( "Aiming an enemy. . .",
+						           MyTeam, " ",
+						           .number(MyTeam),
+						           " ",
+						           Team,
+						           " ",
+						           .number(Team)
+						        );
+					}
+					+aimed_agent(Object);
+					-+aimed("true");
+					.my_team("ALLIED",E);
+					?my_position(Equis,Igrega,Ceta);
+					.concat("cmdpos(",Equis,",",Igrega,",",Ceta,")",Lapos);
+					.send_msg_with_conversation_id(E,achieve,Lapos,"INT");
+				}
+			}
 
- 					    ?debug(Mode); if (Mode<=2) { .println("Aiming an enemy. . .", MyTeam, " ", .number(MyTeam) , " ", Team, " ", .number(Team)); }
-					    +aimed_agent(Object);
-                        -+aimed("true");
+			-+bucle(X+1);
+		}
+	}
 
-                    }
-
-                }
-
-                -+bucle(X+1);
-
-            }
-
-
-        }
-
-     -bucle(_).
-
+	-bucle(_).
 
 
 /////////////////////////////////
@@ -146,7 +190,34 @@ patrollingRadius(10).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!perform_look_action .
++!perform_look_action
+	<-
+	?fovObjects( FOVObjects );
+	.length( FOVObjects, L );
+	-+auxpla( 0 );
+	-+auxtargetfoundpla( "NO" );
+	while( auxpla( C ) & C < L & auxtargetfoundpla( "NO" ) ) {
+		.nth( C, FOVObjects, A );
+		.nth( 1, A, Equipo );
+		//.println( A );
+		if ( Equipo == 100 ) {
+			.nth( 6, A, Posicion);
+			.println( "Enemigo encontrado en: ", Posicion );
+			!notify_enemy_at_position( Posicion );
+			!fw_add_task(
+				task(
+					3000,
+					"TASK_GOTO_POSITION_2",
+					M,
+					Posicion,
+					""
+				)
+			);
+			-+auxtargetfoundpla( "SI" );
+		}
+		-+auxpla( C + 1 );
+	}
+	.
 /// <- ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR PERFORM_LOOK_ACTION GOES HERE.") }.
 
 /**
@@ -204,8 +275,11 @@ patrollingRadius(10).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!update_targets
-	<-	?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR UPDATE_TARGETS GOES HERE.") }.
++!update_targets<-
+
+	!keeper;
+	?debug(Mode); 
+	if (Mode<=1) { .println("YOUR CODE FOR UPDATE_TARGETS GOES HERE.") }.
 
 
 /////////////////////////////////

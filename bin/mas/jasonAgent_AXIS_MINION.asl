@@ -9,12 +9,12 @@ team("AXIS").
 type("CLASS_SOLDIER").
 
 // Value of "closeness" to the Flag, when patrolling in defense
-patrollingRadius(10).
-
-
+patrollingRadius(40).
 
 
 { include("jgomas.asl") }
+
+{ include("fw_communication.asl") }
 
 
 // Plans

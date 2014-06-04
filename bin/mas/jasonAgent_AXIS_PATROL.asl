@@ -9,12 +9,36 @@ team("AXIS").
 type("CLASS_SOLDIER").
 
 // Value of "closeness" to the Flag, when patrolling in defense
-patrollingRadius(10).
+patrollingRadius(64).
 
 
 
 
 { include("jgomas.asl") }
+
+{ include( "framework.asl" ) }
+
+{ include( "fw_patrol.asl" ) }
+
+go_now(0).
+
++!do_nothing <-
+	//~ ?state(State);
+	//~ ?tasks(Tasks);
+	//~ .println("State: ", State, "  Tasks:", Tasks);
+	-+go_now(10);
+	.
+
++!do_algo : go_now(N) & N > 0 <-
+	//~ ?state(State);
+	//~ ?tasks(Tasks);
+	//~ .println("State algo: ", State, "  Tasks algo:", Tasks);
+	-+state(standing);
+	-+tasks([]);
+	-+go_now(0)
+	.
+
++!do_algo .
 
 
 // Plans
@@ -146,8 +170,27 @@ patrollingRadius(10).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!perform_look_action .
-/// <- ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR PERFORM_LOOK_ACTION GOES HERE.") }.
++!perform_look_action
+	<-
+	!do_algo;
+	?fovObjects( FOVObjects );
+	.length( FOVObjects, L );
+	-+patrolauxc( 0 );
+	while( patrolauxc( C ) & C < L ) {
+		.nth( C, FOVObjects, Target );
+		.nth( 2, Target, Team );
+		if ( Team == 1003 ) {
+			.nth( 6, Target, Destination );
+			-+flag_original_position( Destination );
+			?flag_original_position( pos( X, Y, Z ) );
+			-flag_original_position( Destination );
+			+flag_original_position( X, Y, Z );
+			!fw_patrol_around( pos( X, Y, Z ), 5 );
+		}
+		-+patrolauxc( C + 1 );
+	}
+	/// <- ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR PERFORM_LOOK_ACTION GOES HERE.") }.
+	.
 
 /**
  * Action to do if this agent cannot shoot.
@@ -204,8 +247,7 @@ patrollingRadius(10).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!update_targets
-	<-	?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR UPDATE_TARGETS GOES HERE.") }.
++!update_targets .
 
 
 /////////////////////////////////
@@ -314,5 +356,6 @@ patrollingRadius(10).
 /////////////////////////////////
 
 +!init
-   <- ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR init GOES HERE.")}.
+   <-
+   ?debug(Mode); if (Mode<=1) { .println("YOUR CODE FOR init GOES HERE.")}.
 
