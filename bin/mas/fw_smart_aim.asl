@@ -1,5 +1,7 @@
 { include( "framework.asl" ) }
 
+{ include( "fw_distance.asl" ) }
+
 maxDistToShoot( 5 ).
 agent_in_the_middle( _ ).
 
@@ -88,10 +90,18 @@ agent_in_the_middle( _ ).
 					.nth( 1, Object, Team );
 					?my_formattedTeam( MyTeam );
 
-					if ( Team == 200 ) {  // Only if I'm ALLIED
-						?enemies( Enem );
-						.concat( Enem, [Object], Enemigos );
-						-+enemies( Enemigos );
+					if ( team( "ALLIED" ) ) {
+						if ( Team == 200 ) {  // Only if I'm ALLIED
+							?enemies( Enem );
+							.concat( Enem, [Object], Enemigos );
+							-+enemies( Enemigos );
+						}
+					} else {
+						if ( Team == 100 ) {  // Only if I'm ALLIED
+							?enemies( Enem );
+							.concat( Enem, [Object], Enemigos );
+							-+enemies( Enemigos );
+						}
 					}
 				}
 				-+bucle( X + 1 );
