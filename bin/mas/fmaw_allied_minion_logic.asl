@@ -96,12 +96,20 @@ indpendent_mode( "NO" ).
 +cmdpos( Equis, Igrega, Ceta )[ source( S ) ] : blind_march( "NO" )
 	<-
 
+	?alreadySaid(Yn);
+	if( Yn == "YES" ){
+		-+blind_march("YES");
+	}
+	-+alreadySaid( "NO" );
+
 	+commander( S );
+	-position( _ );
 	check_position( pos( Equis, Igrega, Ceta ) );
 
 	if ( position( invalid ) ) {
-		.println( "entering invalid mode" );
+		.println( "entering invalid mode: ", pos( Equis, Igrega, Ceta ) );
 		-+indpendent_mode( "YES" );
+		-+shouldContinue("YES");
 		!take_the_flag
 	} else {
 		if( Equis > 0 & Ceta > 0 ) {
@@ -121,11 +129,6 @@ indpendent_mode( "NO" ).
 			);
 		}
 	}
-	?alreadySaid(Yn);
-	if( Yn == "YES" ){
-		-+blind_march("YES");
-	}
-	-+alreadySaid( "NO" )
 	.
 
 +!cmdpos( Ex, Yg, Zt ) .
