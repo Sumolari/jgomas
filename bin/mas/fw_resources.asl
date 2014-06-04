@@ -1,3 +1,5 @@
+{ include( "framework.asl" ) }
+
 { include( "fw_distance.asl" ) }
 
 /////////////////////////////////
@@ -57,7 +59,7 @@
 	// If distance is lower than threshold.
 	if ( Dist < 125 & Ammo < 30 ) {
 		// Give ammo.
-		!add_task( task( "TASK_GIVE_AMMOPAKS", M, pos( X, Y, Z ), "" ) );
+		!fw_add_task( task( "TASK_GIVE_AMMOPAKS", M, pos( X, Y, Z ), "" ) );
 		//.send(M, tell, "cfa_agree");
 		.concat( "cfa_agree", Content );
 		.send_msg_with_conversation_id( M, tell, Content, "CFA" );
@@ -87,7 +89,7 @@
 	// If distance is lower than threshold.
 	if ( Dist < 75 & Salud < 50 ) {
 		// Give medpack.
-		!add_task( task( "TASK_GIVE_MEDICPAKS", M, pos( X, Y, Z ), "" ) );
+		!fw_add_task( task( "TASK_GIVE_MEDICPAKS", M, pos( X, Y, Z ), "" ) );
 		// .send(M, tell, "cfm_agree");
 		.concat( "cfm_agree", Content );
 		.send_msg_with_conversation_id( M, tell, Content, "CFM" );
