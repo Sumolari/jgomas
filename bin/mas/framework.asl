@@ -31,6 +31,24 @@ currentObjective(0, 0, 0).
 		.println( "DEBUG: ", Content );
 	}
 	.
+	
++flagpos(Fx, Fy, Fz)[source(A)] <-
+	-+tasks([]);
+	!fw_add_task(
+		task(
+			4500,
+			"TASK_MEAT_SHIELD",
+			M,
+			pos(
+				Fx,
+				0,
+				Fz
+			),
+			""
+		)
+	);
+	-flagpos(Fx, Fy, Fz)[source(A)]
+	.
 
 +!fw_add_task( task( Priority, Order, Agent, pos( X, Y, Z ), Desc ) ) :
 	currentActionPriority( CurrentPriority ) <-
