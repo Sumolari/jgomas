@@ -144,6 +144,6 @@
 		// Get nearest valid position.
 		!fw_safe_pos( Dx, 0, Dz );
 		?fw_safe_pos( Fx, Fy, Fz );
-		-+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Dx, 0, Dz ), "" ) );
+		-+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Fx, Fy, Fz ), "" ) );
 	}
 	.
