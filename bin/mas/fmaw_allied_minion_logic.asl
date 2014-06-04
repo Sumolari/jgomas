@@ -12,6 +12,7 @@ vigil_direction( 1 ).
 search_radius( 4 ).
 alreadySaid( "NO" ).
 blind_march( "NO" ).
+commander("nil").
 
 /**
  * Se pone a seguir a un agente del equipo dado.
@@ -72,7 +73,7 @@ blind_march( "NO" ).
 +cmdpos( Equis, Igrega, Ceta )[ source( S ) ] : blind_march( "NO" )
 	<-
 	if( Equis > 0 & Ceta > 0 ) {
-		+commander( S );
+		-+commander( S );
 		-+tasks( [] );
 		!fw_add_task(
 			task(
