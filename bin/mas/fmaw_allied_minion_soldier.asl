@@ -14,8 +14,6 @@ type("CLASS_SOLDIER").
 
 { include("fw_priorities.asl") }
 
-{ include("fw_communication.asl") }
-
 { include("fw_resources.asl") }
 
 { include("fw_aim.asl") }
