@@ -31,7 +31,7 @@ currentObjective(0, 0, 0).
 		.println( "DEBUG: ", Content );
 	}
 	.
-	
+
 +flagpos(Fx, Fy, Fz)[source(A)] <-
 	-+tasks([]);
 	!fw_add_task(
