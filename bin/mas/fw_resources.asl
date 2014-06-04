@@ -42,7 +42,8 @@
 	.
 
 /////////////////////////////////
-//  ATENDER PETICION CALL FOR AMMO  (SOLO FIELDOPS)
+//  ATENDER PETICION CALL FOR
+//  AMMO (SOLO FIELDOPS)
 /////////////////////////////////
 
 // Soy Fieldops y me han pedido ayuda.
@@ -71,7 +72,8 @@
 	.
 
 /////////////////////////////////
-//  ATENDER PETICION CALL FOR MEDIC  (SOLO MEDICOS)
+//  ATENDER PETICION CALL FOR
+//  MEDIC  (SOLO MEDICOS)
 /////////////////////////////////
 
 // Soy medico y me han pedido ayuda
@@ -98,3 +100,29 @@
 	}
 	-fw_cfm( _ )[ source( M ) ]
 	.
+
+/////////////////////////////////
+//  NO_RESOURCE_ACTION
+/////////////////////////////////
+
+/**
+ * Action to do if this agent cannot shoot.
+ *
+ * This plan is called when the agent try to shoot, but has no ammo. The
+ * agent will spit enemies out. :-)
+ *
+ * <em> It's very useful to overload this plan. </em>
+ *
+ */
++!perform_no_ammo_action .
+
+/**
+ * Action to do when an agent is being shot.
+ *
+ * This plan is called every time this agent receives a messager from
+ * agent Manager informing it is being shot.
+ *
+ * <em> It's very useful to overload this plan. </em>
+ *
+ */
++!perform_injury_action .

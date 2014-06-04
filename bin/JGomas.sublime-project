@@ -9,8 +9,13 @@
 		"name": "ASL",
 		"path": "asls",
 		"folder_exclude_patterns": [ "lib", "classes" ],
-		"file_exclude_patterns": [ "*general*", "*captain*", "*colonel*", "*major*", "*command.asl", "fw_*", "framework.asl" ],
+		"file_exclude_patterns": [ "*general*", "*captain*", "*colonel*", "*major*", "*command.asl", "fw_*", "framework.asl", "fmaw_*.asl" ],
 		"file_include_patterns": [ "*.asl" ]
+	}, {
+		"name": "Release",
+		"path": "4maw",
+		"folder_exclude_patterns": [ "lib", "classes" ],
+		"file_include_patterns": [ "fmaw_*.asl" ]
 	}, {
 		"name": "Ranks",
 		"path": "ranks",
