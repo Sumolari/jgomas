@@ -15,6 +15,12 @@
 	-+fw_distance( D )
 	.
 
++!fw_distance( pos( A, B, C ) )
+	<-
+	?my_position( X, Y, Z );
+	!fw_distance( pos( A, B, C ), pos( X, Y, Z ) )
+	.
+
 // Given a list of agents, returns the nearest one to the agent using this plan.
 // Note that this might not be the real shortest distance (walls).
 // @results +fw_nearest( Agent, Position, Distance )
@@ -72,9 +78,7 @@
 +!fw_follow( Agent, Threshold )
 	<-
 	// Extract agent position.
-	//.println( Agent );
 	.nth( 6, Agent, Pos );
-	//.println( Pos );
 	-+fw_follow( Pos );
 	?fw_follow( pos( Tx, Ty, Tz ) );
 	-fw_follow( Pos );

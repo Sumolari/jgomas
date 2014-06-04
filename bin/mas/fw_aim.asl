@@ -74,9 +74,6 @@
      -bucle(_).
 
 
-/////////////////////////////////
-//  PERFORM ACTIONS
-/////////////////////////////////
 /**
  * Action to do when agent has an enemy at sight.
  *
@@ -87,21 +84,16 @@
  *  It's very useful to overload this plan.
  *
  */
-
 +!perform_aim_action
-    <-  // Aimed agents have the following format:
-        // [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-        ?aimed_agent(AimedAgent);
-        ?debug(Mode); if (Mode<=1) { .println("AimedAgent ", AimedAgent); }
-        .nth(1, AimedAgent, AimedAgentTeam);
-        ?debug(Mode); if (Mode<=2) { .println("BAJO EL PUNTO DE MIRA TENGO A ALGUIEN DEL EQUIPO ", AimedAgentTeam); }
-        ?my_formattedTeam(MyTeam);
+	<-
+	// Aimed agents have the following format:
+	// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+	?aimed_agent( AimedAgent );
+	.nth( 1, AimedAgent, AimedAgentTeam );
+	?my_formattedTeam( MyTeam );
 
-
-        if (AimedAgentTeam == 100) {
-
-            .nth(6, AimedAgent, NewDestination);
-            ?debug(Mode); if (Mode<=1) { .println("NUEVO DESTINO MARCADO: ", NewDestination); }
-            //update_destination(NewDestination);
-        }
-        .
+	if ( AimedAgentTeam == 100 ) {
+		.nth( 6, AimedAgent, NewDestination );
+		//update_destination(NewDestination);
+	}
+	.

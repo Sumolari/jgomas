@@ -230,7 +230,7 @@ in_position( "NO" ).
 			+my_objective( math.round( X ), Y, math.round( Z ) );
 		}
 	}
-	
+
 	+my_objective_old( 0, 0, 0 );
 	-+tasks( [] )
 	.

@@ -28,7 +28,6 @@ currentObjective(0, 0, 0).
 		}
 		-auxContent( Content );
 		-auxC( C );
-		.println( "DEBUG: ", Content );
 	}
 	.
 
