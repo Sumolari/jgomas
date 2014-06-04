@@ -103,12 +103,15 @@
 	// Get nearest valid position.
 	!fw_safe_pos( Dx, 0, Dz );
 	?fw_safe_pos( Fx, Fy, Fz );
+
 	// Compute new distance.
 	!fw_distance( pos( Fx, Fy, Fz ), pos( Tx, Ty, Tz ) );
 	?fw_distance( Newdistance );
 	if ( Newdistance < Previousdistance ) {
-		-+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Fx, Fy, Fz ), "" ) );
+		-fw_follow(_);
+		+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Fx, Fy, Fz ), "" ) );
 	} else {
+		.println("CRASH");
 		// Compute desired location.
 		if ( Myx > Tx ) {
 			-+fw_follow_dest_x( Myx - 1 );
@@ -129,6 +132,7 @@
 		// Get nearest valid position.
 		!fw_safe_pos( Dx, 0, Dz );
 		?fw_safe_pos( Fx, Fy, Fz );
-		-+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Dx, 0, Dz ), "" ) );
+		-fw_follow(_);
+		+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Fx, Fy, Fz ), "" ) );
 	}
 	.

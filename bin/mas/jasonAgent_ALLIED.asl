@@ -33,10 +33,8 @@ type("CLASS_SOLDIER").
 * Actions definitions
 *
 *******************************/
-auxAimedAgent(_).
-maxDistToShoot(25).
-aim("false").
-aimedAux("false").
+
+maxDistToShoot(5).
 agent_in_the_middle(_).
 
 
@@ -106,39 +104,10 @@ agent_in_the_middle(_).
 
 if (Length > 0) {
     
-    ?aimed(Aimednat);
-    ?aim(Aimed);
-    ?aimedAux(Aimedaux);
-    .println("Aimed: ", Aimed, " Aimedaux: ",Aimedaux);
-
-    if(Aimed == "true" & Aimedaux == "false"){
-      .println("He encontrado un agente en el medio y ahora estoy volviendo a apuntarle");
-      ?auxAimedAgent(AuxAgent);
-      -+aimed_agent(Auxagent);
-      -+aimedAux("true");
-      -+aimed("true");
-
-      .my_team("ALLIED", E);
-      .length( E, L );
-      +auxC( 0 );
-      
-      while ( auxC( C ) & C < L ) {
-          .nth( C, E, Target );
-          .concat( "get_agent_to_aimNew(", AuxAgent, ")", Messg );
-          .send_msg_with_conversation_id( Target, tell, Messg, "INT" );
-          -+auxC( C + 1 );
-        }
-    }
-
-    if(Aimed == "true" & Aimedaux == "true"){
-      ?aimed_agent(AimedAgent);
-      !fw_follow(AimedAgent, 5);
-      ?fw_follow(Task);
-      !fw_add_task(Task);
-      .println("Le mando a correr detras del tio metodo elegir agente");
-    }
-
-    if(Aimednat == "false" & Aimedaux == "false"){
+    //?aimed_agent(AimedAgent);
+    //.println(AimedAgent);
+    .println("OBSERVO");
+    if(aimed("false")){
       +bucle(0);
       while (bucle(X) & (X < Length)) {
         .nth(X, FOVObjects, Object);
@@ -183,9 +152,6 @@ if (Length > 0) {
         ?fw_nearest( Cagent, PosAgent, D);
         +aimed_agent( Cagent );
         -+aimed("true");
-        -+aim("true");
-        -+aimedAux("true");
-        
         .my_team("ALLIED", E);
         .length( E, L );
         +auxC( 0 );
@@ -196,6 +162,8 @@ if (Length > 0) {
             -+auxC( C + 1 );
         }
       }
+    } else {
+      .println("Ya tengo un objetivo");
     }
   } 
 -bucle(_);
@@ -203,10 +171,11 @@ if (Length > 0) {
 
 
 +get_agent_to_aimNew(Recagente)[source(S)] <-
-    //.println("Recibo: ",Recagente);
-    if(not (Recagente==-1)){
-      ?type(Clase);
-      ?aimed(Apuntando);
+    ?aimed(Apuntando);
+    ?type(Clase);
+
+    if(not (Recagente==-1) & Apuntando == "false" & Clase ==  "CLASS_SOLDIER" ){
+      .println("Recibo mensajey EJECUTO EL IF");
       ?my_position( X, Y, Z);
       .nth( 6, Recagente, Posicion);
       -+posMiddle( Posicion );
@@ -214,18 +183,13 @@ if (Length > 0) {
       !fw_distance( pos( X, Y, Z ), pos( Xa, Ya, Za ) );
       ?fw_distance( D );
       ?maxDistToShoot(Maxdist);
-      
-      if(Clase ==  "CLASS_SOLDIER" & Apuntando == "false"){
-        if( D <= Maxdist ){
-            .println("PONGO A TRUE PORQUE ME HAN PASADO TARGET");
+      if( D <= Maxdist ){
+            .println("RECIBO UN AGENTE Y LE SIGO");
             -+aimed_agent(Recagente);
             -+aimed("true");
-            -+aim("true");
-            -+aimedAux("true");
-        }
       }
-    }
-    .
+      .println("TERMINO DE EJECUTAR EL IF");
+    }.
 
 /////////////////////////////////
 //  LOOK RESPONSE
@@ -257,6 +221,8 @@ if (Length > 0) {
 */
 +!perform_aim_action <-  // Aimed agents have the following format:
         // [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+    ?fovObjects(FOVObjects);
+    .length(FOVObjects, Length);
     .println("AIM ACTION");
     ?aimed_agent(AimedAgent);
     ?debug(Mode);
@@ -276,23 +242,47 @@ if (Length > 0) {
     if ( AimedAgentTeam == 200 ) {
         .nth( 6, AimedAgent, NewDestination );
         -+newDest(NewDestination);
-        ?newDest(pos(X,Y,Z));
-        !agent_in_the_middle( X, Y, Z);
+        ?newDest(pos(Xv,Y,Z));
+        !agent_in_the_middle( Xv, Y, Z);
         ?agent_in_the_middle( Isthereagent);
-        if ( Isthereagent == "true"){
-            .println("Hay un tio en medio así que quito target");
-            -+auxAimedAgent(AimedAgent);
-            -aimed_agent(_);
-            -+aimedAux("false");
-            ?aimed(Aimed);
-            ?aimedAux(Aimedaux);
-            .println("me he encontrado a un tio en medio asi que Aimed: ", Aimed, " Aimedaux: ",Aimedaux);
-        }
 
-        !fw_follow(AimedAgent, 5);
-        ?fw_follow(Task);
-        !fw_add_task(Task);
-        .println("Le mando a correr detras del tio metodo apuntar");
+
+        +bucle(0);
+        +checker("false");
+        .nth(0, AimedAgent, Nameaimed);
+        while (bucle(X) & (X < Length)) {
+          .nth(X, FOVObjects, Object);
+          // Object structure
+          // [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+          .nth(0, Object, Namelist);
+          if ( Nameaimed == Namelist ) {  // Only if I'm ALLIED
+            -+checker("true");
+            .println("VOY A LA POSICION: ", Xv,",",Y,",",Z);
+            !fw_follow(Object, 1);
+            ?fw_follow(Task);
+            .println(Task);
+            !fw_add_task(Task);
+            -+bucle(Length);
+          } else{
+            -+bucle(X+1);
+          }
+        } -bucle(_);
+
+        /*
+        if ( Isthereagent == "true"){
+            .println("Hay un tio en medio asi que quito target");
+            //-aimed_agent(_);
+            //-+aimed("false");
+        }
+        */
+        /*
+        if(checker(Check) & Check == "false"){
+          .println("RETIRO TARGET PORQUE SE ME HA IDO DEL RANGO");
+          -aimed_agent(_);
+          -+aimed("false");
+
+        }*/
+        -checker(_);
         ?debug(Mode);
         if ( Mode <= 1 ) {
             .println("NUEVO DESTINO DEBERIA SER: ", pos(X,Y,Z));
