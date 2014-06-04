@@ -15,6 +15,12 @@
 	-+fw_distance( D )
 	.
 
++!fw_distance( pos( A, B, C ) )
+	<-
+	?my_position( X, Y, Z );
+	!fw_distance( pos( A, B, C ), pos( X, Y, Z ) )
+	.
+
 // Given a list of agents, returns the nearest one to the agent using this plan.
 // Note that this might not be the real shortest distance (walls).
 // @results +fw_nearest( Agent, Position, Distance )
