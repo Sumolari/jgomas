@@ -21,7 +21,7 @@ patrollingRadius(80).
 
 { include("fw_resources.asl") }
 
-{ include("fw_aim.asl") }
+{ include("fw_smart_aim.asl") }
 
 { include("fw_look.asl") }
 

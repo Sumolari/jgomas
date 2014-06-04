@@ -122,7 +122,6 @@ blind_march( "NO" ).
 	.my_team( "ALLIED", E );
 	?my_position( X, Y, Z );
 	?tasks( T );
-	.println( T );
 	.concat( "flagpos(", X, ",", 0, ",", Z, ")", Messg );
 	.send_msg_with_conversation_id( E, tell, Messg, "INT" );
 	!cover_me
@@ -150,7 +149,6 @@ blind_march( "NO" ).
 	<-
 	?commander( A );
 	.concat( "soldierIsReady", Messg );
-	.println( "Sending ", Messg, " to ", A );
 	.send_msg_with_conversation_id( A, tell, Messg, "INT" );
 	-+alreadySaid( "YES" )
 	.

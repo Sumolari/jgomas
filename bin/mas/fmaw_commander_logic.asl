@@ -44,16 +44,12 @@ in_position( "NO" ).
 	)
 	.
 
-+objective( Ex, Yg, Zt )
-	<-
-	.println( "THE FLAG IS MINE, BITCHES!" )
-	.
++objective( Ex, Yg, Zt ) .
 
 +!go_com_pos : shouldContinue( "YES" ) & everybodyReady( "YES" ) & my_objective( X, Y, Z ) & my_objective_old( Xx, Yy, Zz ) & ( X < Xx | Z < Zz | X > Xx | Z > Zz )
 	<-
 	.wait(1000);
 	-+my_objective_old(X,Y,Z);
-	.println( "De camino a la posicion de comandancia ", X, " ", Y, " ", Z );
 
 	!fw_add_task(
 		task(
@@ -97,7 +93,6 @@ in_position( "NO" ).
 		if ( C == 6 ) {
 			.concat( "cmdpos(", X - 10, ",", 0, ",", Z - 20, ")", Messg );
 		}
-		.println( "Ordered: ", Messg, " to ", Target, " (", C, ")" );
 		.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
 		-+auxC( C + 1 );
 	}
@@ -111,7 +106,6 @@ in_position( "NO" ).
 	<-
 	?waitingFor( W );
 	-+waitingFor( W - 1 );
-	.println( W - 1, " more to go!" );
 	-soldierIsReady[ source( V ) ]
 	.
 
