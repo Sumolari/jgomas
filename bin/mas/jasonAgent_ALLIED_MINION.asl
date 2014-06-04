@@ -28,16 +28,16 @@ type("CLASS_FIELDOPS").
 /// CUSTOM ACTIONS
 /////////////////////////////////
 
-following("NO").
 vigil_direction(1).
 search_radius(4).
 alreadySaid("NO").
+blind_march("NO").
 
 /**
  * Se pone a seguir a un agente del equipo dado.
  */
 
-+!search_commander(O) : shouldContinue("YES") <-
++!search_commander(O) : shouldContinue("YES") & blind_march("NO") <-
 	?search_radius(R);
 	?my_position(X, Y, Z);
 	RX = math.round(X);
@@ -64,15 +64,13 @@ alreadySaid("NO").
 			""
 		)
 	)
-	//~ ?tasks(Ta);
-	//~ .println(Ta);
 	.
 	
 +!search_commander(O) <-
 	!check_task_end
 	.
 
-+cmdpos(Equis,Igrega,Ceta)[source(S)] <-
++cmdpos(Equis,Igrega,Ceta)[source(S)] : blind_march("NO") <-
 	if( Equis > 0 & Ceta > 0 ){ //Substitute by source check
 		+commander(S);
 		-+tasks([]);
@@ -94,8 +92,43 @@ alreadySaid("NO").
 		-+alreadySaid("NO");
 	}
 	.
+	
++!cmdpos(Ex, Yg, Zt) .
 
-+shouldContinue("YES") : alreadySaid("NO") & cmdpos(Cx, Cy, Cz) & Cx > 0 & Cz > 0 <- 
++objective(Ex, Yg, Zt) : cmdpos(Cx, Cy, Cz) <-
+	tasks([]);
+	-+blind_march("YES");
+	!fw_add_task(
+		task(
+			4000,
+			"TASK_GET_TO_BASE",
+			M,
+			pos(
+				Ex,
+				0,
+				Zt
+			),
+			""
+		)
+	);
+	.println("THE FLAG IS MINE, BITCHES! Going to ", Ex, " ", Yg, " ", Zt);
+	!cover_me
+	.
+	
+
++!cover_me <-
+	wait(5000);
+	.my_team("ALLIED", E);
+	?my_position(X, Y, Z);
+	?tasks(T);
+	.println(T);
+	.concat( "flagpos(", X, ",", 0, ",", Z, ")", Messg );
+	.send_msg_with_conversation_id( E, tell, Messg, "INT" );
+	!cover_me
+	.
+
+
++shouldContinue("YES") : alreadySaid("NO") & cmdpos(Cx, Cy, Cz) & Cx > 0 & Cz > 0 & blind_march("NO") <- 
 	?commander( A );
 	.concat( "soldierIsReady", Messg );
 	.println("Sending ", Messg, " to ", A);
