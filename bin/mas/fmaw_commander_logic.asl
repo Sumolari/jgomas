@@ -219,7 +219,18 @@ in_position( "NO" ).
 	<-
 	?debug( Mode );
 	?my_position( X, Y, Z );
-	+my_objective( ( math.round( X ) + 30 ), Y, ( math.round( Z ) + 30 ) );
+	+putogomas( math.round( X ), math.round( Z ) );
+	?putogomas(Rex, Rez);
+	
+	if( Rex <= 30 ){
+		-+putogomas(35, Rez);
+	}
+	if( Rez <= 20 ){
+		-+putogomas(Rex, 25);
+	}
+	
+	?putogomas(Ecs, Cet);
+	+my_objective( Ecs, Y, Cet );
 	+my_objective_old( 0, 0, 0 );
 	-+tasks( [] )
 	.

@@ -87,6 +87,10 @@ blind_march( "NO" ).
 				""
 			)
 		);
+		?alreadySaid(Yn);
+		if( Yn == "YES" ){
+			-+blind_march("YES");
+		}
 		-+alreadySaid( "NO" );
 	}
 	.
@@ -122,6 +126,24 @@ blind_march( "NO" ).
 	.concat( "flagpos(", X, ",", 0, ",", Z, ")", Messg );
 	.send_msg_with_conversation_id( E, tell, Messg, "INT" );
 	!cover_me
+	.
+	
++shouldContinue( "YES" ) : blind_march( "YES" )
+	<-
+	?objective(Ox, Oy, Oz);
+	!fw_add_task(
+		task(
+			5000,
+			"TASK_GET_THE_FLAG",
+			M,
+			pos(
+				Ox,
+				0,
+				Oz
+			),
+			""
+		)
+	)
 	.
 
 +shouldContinue( "YES" ) : alreadySaid( "NO" ) & cmdpos( Cx, Cy, Cz ) & Cx > 0 & Cz > 0 & blind_march( "NO" )
