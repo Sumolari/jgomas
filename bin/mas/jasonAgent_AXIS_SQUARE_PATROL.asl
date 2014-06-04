@@ -34,6 +34,7 @@ sqpatrol(0).
 +!square_patrol <-
 	?sqpatrol(P);
 	?my_position(X,Y,Z);
+	?objective(ObjectiveX, ObjectiveY, ObjectiveZ);
 	.println( "Estoy en X:", X, " Y:", Y, " Z:", Z, " P:", P );
 	-+sqpatrol( ( P + 1 ) );
 	if ( P == 0 ) {
@@ -44,9 +45,9 @@ sqpatrol(0).
 				"TASK_GOTO_POSITION",
 				M,
 				pos(
-					130,
-					Y,
-					130
+					ObjectiveX-14,
+					ObjectiveY,
+					ObjectiveZ-40
 				),
 				""
 			)
@@ -60,9 +61,9 @@ sqpatrol(0).
 				"TASK_GOTO_POSITION",
 				M,
 				pos(
-					130,
-					Y,
-					135
+					ObjectiveX-14,
+					ObjectiveY,
+					ObjectiveZ-50
 				),
 				""
 			)
@@ -76,9 +77,9 @@ sqpatrol(0).
 				"TASK_GOTO_POSITION",
 				M,
 				pos(
-					135,
-					Y,
-					135
+					ObjectiveX+16,
+					ObjectiveY,
+					ObjectiveZ-50
 				),
 				""
 			)
@@ -92,9 +93,9 @@ sqpatrol(0).
 				"TASK_GOTO_POSITION",
 				M,
 				pos(
-					135,
-					Y,
-					130
+					ObjectiveX+16,
+					ObjectiveY,
+					ObjectiveZ-40
 				),
 				""
 			)
