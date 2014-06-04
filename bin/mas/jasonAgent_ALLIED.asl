@@ -70,7 +70,8 @@ agent_in_the_middle(_).
         -+posMiddle( Posicion );
         ?posMiddle( pos(Xa, Ya, Za));
         ?my_position( X, Y, Z);
-        if( math.abs((Ze - Z)*(Xa - X) - (Xe - X)*(Za - Z)) <= 2){
+        if( math.abs((Ze - Z)*(Xa - X) - (Xe - X)*(Za - Z)) <= 3){
+            .println("tu puta vida nano");
             -+agent_in_the_middle( "true" );
         }
       -+auxM(C+1); 
@@ -102,12 +103,12 @@ agent_in_the_middle(_).
 +enemies([]);
 ?debug(Mode); if (Mode<=1) { .println("El numero de objetos es:", Length); }
 
+
 if (Length > 0) {
     
     //?aimed_agent(AimedAgent);
     //.println(AimedAgent);
-    .println("OBSERVO");
-    if(aimed("false")){
+    if(aimed("false") & not( objectivePackTaken(on))){
       +bucle(0);
       while (bucle(X) & (X < Length)) {
         .nth(X, FOVObjects, Object);
@@ -150,16 +151,23 @@ if (Length > 0) {
       if(EnemLength > 0){ 
         !fw_nearest( Enem );
         ?fw_nearest( Cagent, PosAgent, D);
-        +aimed_agent( Cagent );
-        -+aimed("true");
-        .my_team("ALLIED", E);
-        .length( E, L );
-        +auxC( 0 );
-        while ( auxC( C ) & C < L ) {
-            .nth( C, E, Target );
-            .concat( "get_agent_to_aimNew(", Cagent, ")", Messg );
-            .send_msg_with_conversation_id( Target, tell, Messg, "INT" );
-            -+auxC( C + 1 );
+        .nth( 6, Cagent, NewDestination );
+        -+newDest(NewDestination);
+        ?newDest(pos(Xv,Y,Z));
+        !agent_in_the_middle( Xv, Y, Z);
+        ?agent_in_the_middle( Isthereagent);
+        if(Isthereagent == "false"){
+          +aimed_agent( Cagent );
+          -+aimed("true");
+          .my_team("ALLIED", E);
+          .length( E, L );
+          +auxC( 0 );
+          while ( auxC( C ) & C < L ) {
+              .nth( C, E, Target );
+              .concat( "get_agent_to_aimNew(", Cagent, ")", Messg );
+              .send_msg_with_conversation_id( Target, tell, Messg, "INT" );
+              -+auxC( C + 1 );
+          }
         }
       }
     } else {
@@ -174,8 +182,7 @@ if (Length > 0) {
     ?aimed(Apuntando);
     ?type(Clase);
 
-    if(not (Recagente==-1) & Apuntando == "false" & Clase ==  "CLASS_SOLDIER" ){
-      .println("Recibo mensajey EJECUTO EL IF");
+    if(not (Recagente==-1) & Apuntando == "false" & Clase ==  "CLASS_SOLDIER" ){ 
       ?my_position( X, Y, Z);
       .nth( 6, Recagente, Posicion);
       -+posMiddle( Posicion );
@@ -184,11 +191,9 @@ if (Length > 0) {
       ?fw_distance( D );
       ?maxDistToShoot(Maxdist);
       if( D <= Maxdist ){
-            .println("RECIBO UN AGENTE Y LE SIGO");
             -+aimed_agent(Recagente);
             -+aimed("true");
       }
-      .println("TERMINO DE EJECUTAR EL IF");
     }.
 
 /////////////////////////////////
@@ -221,9 +226,9 @@ if (Length > 0) {
 */
 +!perform_aim_action <-  // Aimed agents have the following format:
         // [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+    .println("AIM ACTION");
     ?fovObjects(FOVObjects);
     .length(FOVObjects, Length);
-    .println("AIM ACTION");
     ?aimed_agent(AimedAgent);
     ?debug(Mode);
     if (Mode<=1) {
@@ -260,7 +265,6 @@ if (Length > 0) {
             .println("VOY A LA POSICION: ", Xv,",",Y,",",Z);
             !fw_follow(Object, 1);
             ?fw_follow(Task);
-            .println(Task);
             !fw_add_task(Task);
             -+bucle(Length);
           } else{
@@ -268,20 +272,20 @@ if (Length > 0) {
           }
         } -bucle(_);
 
-        /*
+        
         if ( Isthereagent == "true"){
             .println("Hay un tio en medio asi que quito target");
-            //-aimed_agent(_);
-            //-+aimed("false");
+            -aimed_agent(_);
+            -+aimed("false");
         }
-        */
-        /*
+        
+        
         if(checker(Check) & Check == "false"){
-          .println("RETIRO TARGET PORQUE SE ME HA IDO DEL RANGO");
+          //.println("RETIRO TARGET PORQUE SE ME HA IDO DEL RANGO");
           -aimed_agent(_);
           -+aimed("false");
 
-        }*/
+        }
         -checker(_);
         ?debug(Mode);
         if ( Mode <= 1 ) {

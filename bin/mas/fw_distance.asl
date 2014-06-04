@@ -111,7 +111,6 @@
 		-fw_follow(_);
 		+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Fx, Fy, Fz ), "" ) );
 	} else {
-		.println("CRASH");
 		// Compute desired location.
 		if ( Myx > Tx ) {
 			-+fw_follow_dest_x( Myx - 1 );
@@ -124,15 +123,15 @@
 			-+fw_follow_dest_z( Myz + 1 );
 		}
 		// Extract desired location.
-		?fw_follow_dest_x( Dx );
-		?fw_follow_dest_z( Dz );
+		?fw_follow_dest_x( Ddx );
+		?fw_follow_dest_z( Ddz );
 		// Clean beliefs.
-		-fw_follow_dest_x( Dx );
-		-fw_follow_dest_z( Dz );
+		-fw_follow_dest_x( Ddx );
+		-fw_follow_dest_z( Ddz );
 		// Get nearest valid position.
-		!fw_safe_pos( Dx, 0, Dz );
-		?fw_safe_pos( Fx, Fy, Fz );
+		!fw_safe_pos( Ddx, 0, Ddz );
+		?fw_safe_pos( Fdx, Fdy, Fdz );
 		-fw_follow(_);
-		+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Fx, Fy, Fz ), "" ) );
+		+fw_follow( task( 3000, "TASK_FW_FOLLOW", M, pos( Fdx, 0, Fdz ), "" ) );
 	}
 	.
