@@ -12,6 +12,7 @@ vigil_direction( 1 ).
 search_radius( 4 ).
 alreadySaid( "NO" ).
 blind_march( "NO" ).
+indpendent_mode( "NO" ).
 
 /**
  * Se pone a seguir a un agente del equipo dado.
@@ -69,30 +70,62 @@ blind_march( "NO" ).
 	!check_task_end
 	.
 
++!take_the_flag
+	<-
+	?objective( FlagX, FlagY, FlagZ );
+	!fw_add_task(
+		task(
+			9999,
+			"TASK_GOTO_POSITION_2",
+			M,
+			pos(
+				FlagX,
+				FlagY,
+				FlagZ
+			),
+			""
+		)
+	)
+	.
+
++cmdpos( Equis, Igrega, Ceta )[ source( S ) ] : indpendent_mode( "YES" )
+	<-
+	!take_the_flag
+	.
+
 +cmdpos( Equis, Igrega, Ceta )[ source( S ) ] : blind_march( "NO" )
 	<-
-	if( Equis > 0 & Ceta > 0 ) {
-		+commander( S );
-		-+tasks( [] );
-		!fw_add_task(
-			task(
-				9999,
-				"TASK_GOTO_POSITION_ORDER",
-				M,
-				pos(
-					Equis,
-					0,
-					Ceta
-				),
-				""
-			)
-		);
-		?alreadySaid(Yn);
-		if( Yn == "YES" ){
-			-+blind_march("YES");
+
+	+commander( S );
+	check_position( pos( Equis, Igrega, Ceta ) );
+
+	if ( position( invalid ) ) {
+		.println( "entering invalid mode" );
+		-+indpendent_mode( "YES" );
+		!take_the_flag
+	} else {
+		if( Equis > 0 & Ceta > 0 ) {
+			-+tasks( [] );
+			!fw_add_task(
+				task(
+					9999,
+					"TASK_GOTO_POSITION_ORDER",
+					M,
+					pos(
+						Equis,
+						0,
+						Ceta
+					),
+					""
+				)
+			);
 		}
-		-+alreadySaid( "NO" );
 	}
+	?alreadySaid(Yn);
+	if( Yn == "YES" ){
+		-+blind_march("YES");
+	}
+	-+alreadySaid( "NO" )
 	.
 
 +!cmdpos( Ex, Yg, Zt ) .
@@ -126,7 +159,7 @@ blind_march( "NO" ).
 	.send_msg_with_conversation_id( E, tell, Messg, "INT" );
 	!cover_me
 	.
-	
+
 +shouldContinue( "YES" ) : blind_march( "YES" )
 	<-
 	?objective(Ox, Oy, Oz);

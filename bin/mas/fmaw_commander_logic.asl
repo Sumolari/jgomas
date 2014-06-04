@@ -215,14 +215,14 @@ in_position( "NO" ).
 	?my_position( X, Y, Z );
 	+putogomas( math.round( X ), math.round( Z ) );
 	?putogomas(Rex, Rez);
-	
+
 	if( Rex <= 30 ){
 		-+putogomas(35, Rez);
 	}
 	if( Rez <= 20 ){
 		-+putogomas(Rex, 25);
 	}
-	
+
 	?putogomas(Ecs, Cet);
 	+my_objective( Ecs, Y, Cet );
 	+my_objective_old( 0, 0, 0 );
