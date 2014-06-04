@@ -42,13 +42,25 @@
                     .nth(1, Object, Team);
                     ?my_formattedTeam(MyTeam);
 
-                    if (Team == 100) {  // Only if I'm AXIS
+                    ?team( Equipo );
 
- 					    ?debug(Mode); if (Mode<=2) { .println("Aiming an enemy. . .", MyTeam, " ", .number(MyTeam) , " ", Team, " ", .number(Team)); }
-					    +aimed_agent(Object);
-                        -+aimed("true");
+                    if ( Equipo == "AXIS" ) {
+	                    if (Team == 100) {  // Only if I'm AXIS
 
-                    }
+	 					    ?debug(Mode); if (Mode<=2) { .println("Aiming an enemy. . .", MyTeam, " ", .number(MyTeam) , " ", Team, " ", .number(Team)); }
+						    +aimed_agent(Object);
+	                        -+aimed("true");
+
+	                    }
+	                } else {
+	                	if (Team == 200) {  // Only if I'm ALLIED
+
+	 					    ?debug(Mode); if (Mode<=2) { .println("Aiming an enemy. . .", MyTeam, " ", .number(MyTeam) , " ", Team, " ", .number(Team)); }
+						    +aimed_agent(Object);
+	                        -+aimed("true");
+
+	                    }
+	                }
 
                 }
 
@@ -93,13 +105,3 @@
             //update_destination(NewDestination);
         }
         .
-
-/**
- * Action to do when the agent is looking at.
- *
- * This plan is called just after Look method has ended.
- *
- * <em> It's very useful to overload this plan. </em>
- *
- */
-+!perform_look_action .
