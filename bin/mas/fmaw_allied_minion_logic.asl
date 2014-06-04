@@ -71,6 +71,39 @@ indpendent_mode( "NO" ).
 	!check_task_end
 	.
 
++!go_to_valid_pos( X, Y, Z )
+	<-
+	+auxX(0);
+	+auxZ(0);
+	+auxPos(X, Y, Z);
+	while( position( invalid ) ){
+		-position(_);
+		?auxX(Ax);
+		?auxZ(Az);
+		-+auxX(Ax+1);
+		-+auxZ(Az+1);
+		check_position( pos( X+Ax, Y, Z+Az ) );
+	}
+	?auxX(Ax);
+	?auxZ(Az);
+	.println("Finally going to ", X+Ax, " ", Z+Az);
+	!fw_add_task(
+		task(
+			9999,
+			"TASK_GOTO_POSITION_ORDER",
+			M,
+			pos(
+				X+Ax,
+				0,
+				Z+Az
+			),
+			""
+		)
+	);
+	-auxX(_);
+	-auxZ(_);
+	.
+
 +!take_the_flag
 	<-
 	?objective( FlagX, FlagY, FlagZ );
@@ -111,24 +144,22 @@ indpendent_mode( "NO" ).
 		.println( "entering invalid mode: ", pos( Equis, Igrega, Ceta ) );
 		-+indpendent_mode( "YES" );
 		-+shouldContinue("YES");
-		!take_the_flag
+		!go_to_valid_pos( Equis, Igrega, Ceta );
 	} else {
-		if( Equis > 0 & Ceta > 0 ) {
-			-+tasks( [] );
-			!fw_add_task(
-				task(
-					9999,
-					"TASK_GOTO_POSITION_ORDER",
-					M,
-					pos(
-						Equis,
-						0,
-						Ceta
-					),
-					""
-				)
-			);
-		}
+		-+tasks( [] );
+		!fw_add_task(
+			task(
+				9999,
+				"TASK_GOTO_POSITION_ORDER",
+				M,
+				pos(
+					Equis,
+					0,
+					Ceta
+				),
+				""
+			)
+		);
 	}
 	.
 
