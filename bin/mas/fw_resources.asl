@@ -26,7 +26,6 @@
 	if ( Ar <= At ) {
 		?my_position( X, Y, Z );
 		.my_team( Desiredammoteam, E1 );
-		//.println("Mi equipo intendencia: ", E1 );
 		.concat( "fw_cfa(", X, ", ", Y, ", ", Z, ", ", Ar, ")", Content1 );
 		.send_msg_with_conversation_id( E1, tell, Content1, "CFA" );
 	}
@@ -37,7 +36,6 @@
 	if ( Hr <= Ht ) {
 		?my_position( X, Y, Z );
 		.my_team( Desiredmedicteam, E2 );
-		//.println("Mi equipo medico: ", E2 );
 		.concat( "fw_cfm(", X, ", ", Y, ", ", Z, ", ", Hr, ")", Content2 );
 		.send_msg_with_conversation_id( E2, tell, Content2, "CFM" );
 	}

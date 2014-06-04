@@ -45,10 +45,8 @@
 	while( auxpla( C ) & C < L & auxtargetfoundpla( "NO" ) ) {
 		.nth( C, FOVObjects, A );
 		.nth( 1, A, Equipo );
-		//.println( A );
 		if ( Equipo == 100 ) {
 			.nth( 6, A, Posicion);
-			.println( "Enemigo encontrado en: ", Posicion );
 			!notify_enemy_at_position( Posicion );
 			!fw_add_task(
 				task(

@@ -1,6 +1,7 @@
 /////////////////////////////////
 //  GET AGENT TO AIM
 /////////////////////////////////
+
 /**
  * Calculates if there is an enemy at sight.
  *
@@ -13,70 +14,48 @@
  *
  */
 +!get_agent_to_aim
-    <-  ?debug(Mode); if (Mode<=2) { .println("Looking for agents to aim."); }
-        ?fovObjects(FOVObjects);
-        .length(FOVObjects, Length);
+	<-
+	?fovObjects( FOVObjects );
+	.length( FOVObjects, Length );
+	if ( Length > 0 ) {
+		+bucle( 0 );
+		-+aimed( "false" );
+		while ( aimed( "false" ) & bucle( X ) & ( X < Length ) ) {
+			.nth( X, FOVObjects, Object );
+			// Object structure
+			// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+			.nth( 2, Object, Type );
 
-        ?debug(Mode); if (Mode<=1) { .println("El numero de objetos es:", Length); }
+			if ( Type > 1000 ) {
+			} else {
+				// Object may be an enemy
+				.nth( 1, Object, Team );
+				?my_formattedTeam( MyTeam );
 
-        if (Length > 0) {
-		    +bucle(0);
+				?team( Equipo );
 
-            -+aimed("false");
-
-            while (aimed("false") & bucle(X) & (X < Length)) {
-
-                //.println("En el bucle, y X vale:", X);
-
-                .nth(X, FOVObjects, Object);
-                // Object structure
-                // [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-                .nth(2, Object, Type);
-
-                ?debug(Mode); if (Mode<=2) { .println("Objeto Analizado: ", Object); }
-
-                if (Type > 1000) {
-                    ?debug(Mode); if (Mode<=2) { .println("I found some object."); }
-                } else {
-                    // Object may be an enemy
-                    .nth(1, Object, Team);
-                    ?my_formattedTeam(MyTeam);
-
-                    ?team( Equipo );
-
-                    if ( Equipo == "AXIS" ) {
-	                    if (Team == 100) {  // Only if I'm AXIS
-
-	 					    ?debug(Mode); if (Mode<=2) { .println("Aiming an enemy. . .", MyTeam, " ", .number(MyTeam) , " ", Team, " ", .number(Team)); }
-						    +aimed_agent(Object);
-	                        -+aimed("true");
-
-	                    }
-	                } else {
-	                	if (Team == 200) {  // Only if I'm ALLIED
-
-	 					    ?debug(Mode); if (Mode<=2) { .println("Aiming an enemy. . .", MyTeam, " ", .number(MyTeam) , " ", Team, " ", .number(Team)); }
-						    +aimed_agent(Object);
-	                        -+aimed("true");
-
-	                    }
-	                }
-
-                }
-
-                -+bucle(X+1);
-
-            }
-
-
-        }
-
-     -bucle(_).
+				if ( Equipo == "AXIS" ) {
+					if ( Team == 100 ) { // Only if I'm AXIS
+						+aimed_agent( Object );
+						-+aimed( "true" );
+					}
+				} else {
+					if ( Team == 200 ) { // Only if I'm ALLIED
+						+aimed_agent( Object );
+						-+aimed( "true" );
+					}
+				}
+			}
+			-+bucle( X + 1 );
+		}
+	}
+	-bucle( _ ).
 
 
 /////////////////////////////////
 //  PERFORM ACTIONS
 /////////////////////////////////
+
 /**
  * Action to do when agent has an enemy at sight.
  *
@@ -87,21 +66,16 @@
  *  It's very useful to overload this plan.
  *
  */
-
 +!perform_aim_action
-    <-  // Aimed agents have the following format:
-        // [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-        ?aimed_agent(AimedAgent);
-        ?debug(Mode); if (Mode<=1) { .println("AimedAgent ", AimedAgent); }
-        .nth(1, AimedAgent, AimedAgentTeam);
-        ?debug(Mode); if (Mode<=2) { .println("BAJO EL PUNTO DE MIRA TENGO A ALGUIEN DEL EQUIPO ", AimedAgentTeam); }
-        ?my_formattedTeam(MyTeam);
+	<-
+	// Aimed agents have the following format:
+	// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+	?aimed_agent( AimedAgent );
+	.nth( 1, AimedAgent, AimedAgentTeam );
+	?my_formattedTeam( MyTeam );
 
-
-        if (AimedAgentTeam == 100) {
-
-            .nth(6, AimedAgent, NewDestination);
-            ?debug(Mode); if (Mode<=1) { .println("NUEVO DESTINO MARCADO: ", NewDestination); }
-            //update_destination(NewDestination);
-        }
-        .
+	if ( AimedAgentTeam == 100 ) {
+		.nth( 6, AimedAgent, NewDestination );
+		//update_destination(NewDestination);
+	}
+	.
