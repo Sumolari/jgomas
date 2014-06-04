@@ -45,11 +45,11 @@ currentObjective(0, 0, 0).
 		}
 	}
 	.
-	
+
 +!check_task_end <-
 	?my_position(X, Y, Z);
 	?currentObjective(Ox, Oy, Oz);
-	
+
 	RX = math.round(X);
 	RZ = math.round(Z);
 	if( Ox - RX < 2 & RX - Ox < 2 & Oz - RZ < 2 & RZ - Oz < 2 ){

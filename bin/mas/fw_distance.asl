@@ -15,6 +15,21 @@
 	-+fw_distance( D )
 	.
 
+// Given a position, returns the euclidean distance from agent's position to it.
+// Note that this might not be the real shortest distance (walls).
+// @results +fw_distance( Nx, Y, Nz )
+// Usage:
+/*
+	!fw_distance( pos( 0, 0, 0 ) );
+	?fw_distance( D );
+	.println( "Distance is ", D );
+*/
++!fw_distance( pos( A, B, C ) )
+	<-
+	?my_position( X, Y, Z );
+	!fw_distance( pos( A, B, C ), pos( X, Y, Z ) )
+	.
+
 // Given a list of agents, returns the nearest one to the agent using this plan.
 // Note that this might not be the real shortest distance (walls).
 // @results +fw_nearest( Agent, Position, Distance )
