@@ -9,11 +9,11 @@ team("AXIS").
 type("CLASS_SOLDIER").
 
 // Value of "closeness" to the Flag, when patrolling in defense
-patrollingRadius(40).
-
-// Import needed modules.
+patrollingRadius(10).
 
 { include("jgomas.asl") }
+
+{ include("framework.asl") }
 
 { include("fw_priorities.asl") }
 
@@ -25,11 +25,35 @@ patrollingRadius(40).
 
 { include("fw_look.asl") }
 
+// Plans
+
 /*******************************
 *
 * Actions definitions
 *
 *******************************/
+
+/////////////////////////////////
+/// CUSTOM ACTIONS
+/////////////////////////////////
+
++!keeper
+	<-
+	//?keeper(P);
+	?objective( Ox, Oy, Oz );
+	?my_position( X, Y, Z );
+	!add_task(
+		task(
+			3000,
+			"TASK_GOTO_POSITION",
+			M,
+			pos(
+				Ox, Oy, Oz
+			),
+			""
+		)
+	)
+	.
 
 /**
  * Action to do when the agent is looking at.
@@ -39,7 +63,34 @@ patrollingRadius(40).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!perform_look_action .
++!perform_look_action
+	<-
+	?fovObjects( FOVObjects );
+	.length( FOVObjects, L );
+	-+auxpla( 0 );
+	-+auxtargetfoundpla( "NO" );
+	while( auxpla( C ) & C < L & auxtargetfoundpla( "NO" ) ) {
+		.nth( C, FOVObjects, A );
+		.nth( 1, A, Equipo );
+		//.println( A );
+		if ( Equipo == 100 ) {
+			.nth( 6, A, Posicion);
+			.println( "Enemigo encontrado en: ", Posicion );
+			!notify_enemy_at_position( Posicion );
+			!fw_add_task(
+				task(
+					3000,
+					"TASK_GOTO_POSITION_2",
+					M,
+					Posicion,
+					""
+				)
+			);
+			-+auxtargetfoundpla( "SI" );
+		}
+		-+auxpla( C + 1 );
+	}
+	.
 
 /////////////////////////////////
 //  UPDATE TARGETS
@@ -55,7 +106,7 @@ patrollingRadius(40).
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!update_targets .
++!update_targets <- !keeper.
 
 /////////////////////////////////
 //  Initialize variables
