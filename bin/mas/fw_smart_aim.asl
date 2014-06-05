@@ -2,7 +2,7 @@
 
 { include( "fw_distance.asl" ) }
 
-maxDistToShoot( 5 ).
+maxDistToShoot( 15 ).
 agent_in_the_middle( _ ).
 
 /*
@@ -46,7 +46,6 @@ agent_in_the_middle( _ ).
 		?posMiddle( pos( Xa, Ya, Za ) );
 		?my_position( X, Y, Z );
 		if ( math.abs( ( Ze - Z ) * ( Xa - X ) - ( Xe - X ) * ( Za - Z ) ) <= 3 ) {
-			.println( "tu puta vida nano" );
 			-+agent_in_the_middle( "true" );
 		}
 		-+auxM( C + 1 );
@@ -188,14 +187,8 @@ agent_in_the_middle( _ ).
 
 	?my_formattedTeam( MyTeam );
 	if ( auxmyteamcod( Auxmymyteamcod ) & AimedAgentTeam == Auxmymyteamcod ) {
-		.nth( 6, AimedAgent, NewDestination );
-		-+newDest( NewDestination );
-		?newDest( pos( Xv, Y, Z ) );
-		!agent_in_the_middle( Xv, Y, Z );
-		?agent_in_the_middle( Isthereagent );
-
+		
 		+bucle( 0 );
-		+checker("false");
 		.nth( 0, AimedAgent, Nameaimed );
 		while ( bucle( X ) & ( X < Length ) ) {
 			.nth( X, FOVObjects, Object );
@@ -203,28 +196,33 @@ agent_in_the_middle( _ ).
 			// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
 			.nth( 0, Object, Namelist );
 			if ( Nameaimed == Namelist ) {  // Only if I'm ALLIED
-				-+checker( "true" );
-				!fw_follow( Object, 1 );
-				?fw_follow( Task );
-				!fw_add_task( Task );
-				-+bucle( Length );
+				-+checker("true");
+				.nth( 6, AimedAgent, NewDestination );
+				-+newDest( NewDestination );
+				?newDest( pos( Xv, Y, Z ) );
+				!agent_in_the_middle( Xv, Y, Z );
+				?agent_in_the_middle( Isthereagent );
+
+				if ( Isthereagent == "true" ) {
+					-aimed_agent( _ );
+					-+aimed( "false" );
+				} else {
+					!fw_follow( Object, 1 );
+					?fw_follow( Task );
+					!fw_add_task( Task );
+					-+bucle( Length );
+				}
 			} else {
 				-+bucle( X + 1 );
 			}
 		}
-		-bucle( _ );
-
-		if ( Isthereagent == "true" ) {
-			-aimed_agent( _ );
-			-+aimed( "false" );
-		}
-
-
+		
 		if ( checker( Check ) & Check == "false" ) {
 			-aimed_agent( _ );
 			-+aimed( "false" );
-		}
-
+		} 
+		
 		-checker( _ );
+		-bucle( _ );
 	}
 	.
