@@ -23,38 +23,43 @@
  */
 +enemy_at_pos( pos( X, Y, Z ) )
 	<-
-	// Get distance from my position to target's.
-	!fw_distance( pos( X, Y, Z ) );
-	?fw_distance( D );
-	// If enemy is near enough...
-	if ( D < 60 ) {
-		// Get him!
-		!fw_add_task(
-			task(
-				7500,
-				"TASK_GOTO_POSITION_KILL",
-				M,
-				pos(
-					X,
-					Y,
-					Z
-				),
-				""
+	
+	//Don't interrupt an agent that is pursuing and enemy
+	?aimed(Aiming);
+	if(Aiming == "false"){
+		// Get distance from my position to target's.
+		!fw_distance( pos( X, Y, Z ) );
+		?fw_distance( D );
+		// If enemy is near enough...
+		if ( D < 60 ) {
+			// Get him!
+			!fw_add_task(
+				task(
+					7500,
+					"TASK_GOTO_POSITION_KILL",
+					M,
+					pos(
+						X,
+						Y,
+						Z
+					),
+					""
+				)
+			);
+		} else {
+			// Go to flag just in case...
+			?objective( Ox, Oy, Oz );
+			!fw_add_task(
+				task(
+					3000,
+					"TASK_GOTO_POSITION",
+					M,
+					pos(
+						Ox, Oy, Oz
+					),
+					""
+				)
 			)
-		);
-	} else {
-		// Go to flag just in case...
-		?objective( Ox, Oy, Oz );
-		!fw_add_task(
-			task(
-				3000,
-				"TASK_GOTO_POSITION",
-				M,
-				pos(
-					Ox, Oy, Oz
-				),
-				""
-			)
-		)
+		}
 	}
 	.
