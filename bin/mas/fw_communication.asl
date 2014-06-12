@@ -51,7 +51,7 @@
 		if ( map_12( yes ) ) {
 			Aleatorio = math.random( 1 );
 			.println( Aleatorio );
-			if ( Aleatorio > 0.4 ) {
+			if ( Aleatorio > 0.2 ) {
 				.println( "Going to bottom-right door" );
 				// Go to where enemies will be...
 				-+keeper_position( 228, 0, 214 );
