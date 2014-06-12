@@ -173,7 +173,7 @@ agent_in_the_middle( _ ).
 +!perform_aim_action
 	<-  // Aimed agents have the following format:
 	// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-	.println( "AIM ACTION" );
+	//.println( "AIM ACTION" );
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, Length );
 	?aimed_agent( AimedAgent );

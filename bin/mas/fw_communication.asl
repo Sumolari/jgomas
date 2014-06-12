@@ -49,8 +49,9 @@
 		);
 	} else {
 		if ( map_12( yes ) ) {
-			math.random( N );
-			if ( N > 0.4 ) {
+			Aleatorio = math.random( 1 );
+			.println( Aleatorio );
+			if ( Aleatorio > 0.4 ) {
 				.println( "Going to bottom-right door" );
 				// Go to where enemies will be...
 				-+keeper_position( 228, 0, 214 );
