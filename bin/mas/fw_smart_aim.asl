@@ -142,7 +142,7 @@ agent_in_the_middle( _ ).
 	<-
 	?aimed( Apuntando );
 	?type( Clase );
-	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" ) {
+	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" & not( map_12( yes ) ) ) {
 		?my_position( X, Y, Z );
 		.nth( 6, Recagente, Posicion );
 		-+posMiddle( Posicion );
