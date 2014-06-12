@@ -11,6 +11,7 @@
 in_pos( false ).
 everybodyReady( "YES" ).
 in_position( "NO" ).
+afterinit( "N" ).
 
 +!get_the_flag : everybodyReady( "YES" ) & in_position( "NO" )
 	<-
@@ -44,7 +45,33 @@ in_position( "NO" ).
 	)
 	.
 
-+objective( Ex, Yg, Zt ) .
++objective( Ex, Yg, Zt ) : afterinit( "Y" )
+	<-
+	tasks( [] );
+	-+my_objective(Ex, Yg, Zt);
+	!fw_add_task(
+		task(
+			4000,
+			"TASK_GET_TO_BASE",
+			M,
+			pos(
+				Ex,
+				0,
+				Zt
+			),
+			""
+		)
+	);
+	!cover_me
+	.
+
++!cover_me <-
+	.my_team( "ALLIED", E );
+	?my_position( X, Y, Z );
+	.concat( "flagpos(", X, ",", 0, ",", Z, ")", Messg );
+	.send_msg_with_conversation_id( E, tell, Messg, "INT" );
+	!cover_me
+	.
 
 +!go_com_pos : shouldContinue( "YES" ) & everybodyReady( "YES" ) & my_objective( X, Y, Z ) & my_objective_old( Xx, Yy, Zz ) & ( X < Xx | Z < Zz | X > Xx | Z > Zz )
 	<-
@@ -170,13 +197,6 @@ in_position( "NO" ).
 * <em> It's very useful to overload this plan. </em>
 *
 */
-+!perform_look_action : position_bug
-	<-
-	-+state( standing );
-	-+tasks( [] );
-	-position_bug
-	.
-
 +!perform_look_action .
 
 /////////////////////////////////
@@ -197,8 +217,22 @@ in_position( "NO" ).
 +!update_targets
 	<-
 	?my_position( X, Y, Z );
-	if ( X == 0 & Z == 0 ) {
-		+position_bug;
+	-+afterinit( "Y" );
+	if ( map_12( yes ) ) {
+		?my_objective( FlagX, FlagY, FlagZ );
+		!add_task(
+			task(
+				1000,
+				"TASK_GET_OBJECTIVE",
+				M,
+				pos(
+					FlagX,
+					0,
+					FlagZ
+				),
+				""
+			)
+		);
 	} else {
 		!go_com_pos;
 	}
@@ -213,6 +247,8 @@ in_position( "NO" ).
 	<-
 	?debug( Mode );
 	?my_position( X, Y, Z );
+	
+	!map_12;
 	
 	if( math.round( X ) < 35 ){
 		if( math.round( Z ) < 25 ){
@@ -229,6 +265,11 @@ in_position( "NO" ).
 		else{
 			+my_objective( math.round( X ), Y, math.round( Z ) );
 		}
+	}
+	
+	if( map_12( yes ) ){
+		?objective(Fx, Fy, Fz);
+		-+my_objective( Fx, Fy, Fz );
 	}
 
 	+my_objective_old( 0, 0, 0 );
