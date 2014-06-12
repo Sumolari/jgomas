@@ -19,6 +19,11 @@
 	.
 
 /**
+ * Ignore orders if I know where I should be.
+ */
++enemy_at_pos( _ ) : keeper_position( Ox, Oy, Oz ) .
+
+/**
  * Reacts to an incoming beliefs about the position of an enemy.
  */
 +enemy_at_pos( pos( X, Y, Z ) )
@@ -48,31 +53,11 @@
 			if ( N > 0.4 ) {
 				.println( "Going to bottom-right door" );
 				// Go to where enemies will be...
-				!fw_add_task(
-					task(
-						3000,
-						"TASK_GOTO_POSITION",
-						M,
-						pos(
-							228, 0, 214
-						),
-						""
-					)
-				)
+				-+keeper_position( 228, 0, 214 );
 			} else {
 				.println( "Going to bottom-left door" );
 				// Go to where enemies will be...
-				!fw_add_task(
-					task(
-						3000,
-						"TASK_GOTO_POSITION",
-						M,
-						pos(
-							30, 0, 214
-						),
-						""
-					)
-				)
+				-+keeper_position( 30, 0, 214 );
 			}
 		} else {
 			// Go to flag just in case...

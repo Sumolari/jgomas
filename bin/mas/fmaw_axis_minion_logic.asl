@@ -6,6 +6,37 @@
 *
 *******************************/
 
+/////////////////////////////////
+/// CUSTOM ACTIONS
+/////////////////////////////////
+
+// To keep a position regardless any default behaviour.
++!keeper : map_12( yes ) & keeper_position( Ox, Oy, Oz )
+	<-
+	!add_task(
+		task(
+			3000,
+			"TASK_GOTO_POSITION",
+			M,
+			pos(
+				Ox, Oy, Oz
+			),
+			""
+		)
+	)
+	.
+
+// By default guard no position.
++!keeper .
+
+// This belief triggers the guard.
++keeper_position( Ox, Oy, Oz )
+	<-
+	-+objective( Ox, Oy, Oz );
+	!keeper;
+	-+state( standing );
+	.
+
 /**
  * Action to do when the agent is looking at.
  *
@@ -30,7 +61,10 @@
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!update_targets .
++!update_targets
+	//<-
+	//!keeper;
+	.
 
 /////////////////////////////////
 //  Initialize variables
