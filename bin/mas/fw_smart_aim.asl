@@ -2,8 +2,10 @@
 
 { include( "fw_distance.asl" ) }
 
-maxDistToShoot( 5 ).
+maxDistToShoot( 15 ).
 agent_in_the_middle( _ ).
+checkhp("false").
+checkamm("false").
 
 /*
 * Guarda en una variable si hay algún agente aliado en el camino o no
@@ -46,7 +48,6 @@ agent_in_the_middle( _ ).
 		?posMiddle( pos( Xa, Ya, Za ) );
 		?my_position( X, Y, Z );
 		if ( math.abs( ( Ze - Z ) * ( Xa - X ) - ( Xe - X ) * ( Za - Z ) ) <= 3 ) {
-			.println( "tu puta vida nano" );
 			-+agent_in_the_middle( "true" );
 		}
 		-+auxM( C + 1 );
@@ -74,39 +75,127 @@ agent_in_the_middle( _ ).
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, Length );
 	+enemies( [] );
+	+packs( [] );
+	+packsamm( [] );
+	?my_health(Mivida);
+	?my_ammo(Miammo);
 
 	if ( Length > 0 ) {
-		if ( aimed( "false" ) & not( objectivePackTaken( on ) ) ) {
-			+bucle( 0 );
-			while ( bucle( X ) & ( X < Length ) ) {
-				.nth( X, FOVObjects, Object );
-				// Object structure
-				// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-				.nth( 2, Object, Type );
+		+bucle( 0 );
+		-+checkhp("false");
+		-+checkamm("false");
 
-				if ( Type > 1000 ) {
+		while ( bucle( X ) & ( X < Length ) ) {
+			.nth( X, FOVObjects, Object );
+			
+			// Object structure
+			// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+			.nth( 2, Object, Type );
+
+			if ( Type == 1001 ) {
+				.nth( 1, Object, Team );
+				?my_formattedTeam( MyTeam );
+
+				if ( team( "ALLIED" ) ) {
+					if ( Team == 100 ) {  // Only if I'm ALLIED
+						?packs( Packs );
+						.concat( Packs, [Object], Packsd );
+						-+packs( Packsd );
+					}
 				} else {
-					// Object may be an enemy
-					.nth( 1, Object, Team );
-					?my_formattedTeam( MyTeam );
-
-					if ( team( "ALLIED" ) ) {
-						if ( Team == 200 ) {  // Only if I'm ALLIED
-							?enemies( Enem );
-							.concat( Enem, [Object], Enemigos );
-							-+enemies( Enemigos );
-						}
-					} else {
-						if ( Team == 100 ) {  // Only if I'm ALLIED
-							?enemies( Enem );
-							.concat( Enem, [Object], Enemigos );
-							-+enemies( Enemigos );
-						}
+					if ( Team == 200 ) {  // Only if I'm ALLIED
+						?packs( Packs );
+						.concat( Packs, [Object], Packsd );
+						-+packs( Packsd );
 					}
 				}
-				-+bucle( X + 1 );
+			} 
+
+			if ( Type == 1002 ) {
+				.nth( 1, Object, Team );
+				?my_formattedTeam( MyTeam );
+
+				if ( team( "ALLIED" ) ) {
+					if ( Team == 100 ) {  // Only if I'm ALLIED
+						?packsamm( Packsa );
+						.concat( Packsa, [Object], Packsad );
+						-+packsamm( Packsad );
+					}
+				} else {
+					if ( Team == 200 ) {  // Only if I'm ALLIED
+						?packsamm( Packsa );
+						.concat( Packsa, [Object], Packsad );
+						-+packsamm( Packsad );
+					}
+				}
+			} 
+
+			if(Type <= 1000) {
+				// Object may be an enemy
+				.nth( 1, Object, Team );
+				?my_formattedTeam( MyTeam );
+
+				if ( team( "ALLIED" ) ) {
+					if ( Team == 200 ) {  // Only if I'm ALLIED
+						?enemies( Enem );
+						.concat( Enem, [Object], Enemigos );
+						-+enemies( Enemigos );
+					}
+				} else {
+					if ( Team == 100 ) {  // Only if I'm ALLIED
+						?enemies( Enem );
+						.concat( Enem, [Object], Enemigos );
+						-+enemies( Enemigos );
+					}
+				}
 			}
 
+			-+bucle( X + 1 );
+		}
+
+		if(Mivida <= 25){
+			.println("NECESITO VIDA");
+			?packs( PacksVida );
+			.length( PacksVida, Pvlength);
+			if( Pvlength > 0 ) {
+				!fw_nearest( PacksVida );
+				?fw_nearest( Hppack, Pospack, D );
+				.nth( 6, Hppack, NewDestination );
+				if( D <= 50 ){
+					-aimed_agent( _ );
+					-+aimed( "false" );
+					.println("Voy a por botiquines");
+					-+checkhp("true");
+					-+newDest( NewDestination );
+					?newDest( pos( Xv, Y, Z ) );
+					!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, pos( Xv, Y, Z), ""));
+				}
+			}
+		}
+
+		if(Miammo < 30 & checkhp("false")){
+			.println("NECESITO AMMO");
+			?packsamm( Packsmuni );
+			.length( Packsmuni, Ammlength);
+			if( Ammlength > 0 ) {
+				.println("HAY AMMO");
+				!fw_nearest( Packsmuni );
+				?fw_nearest( Munipack, Pospack, D );
+				.nth( 6, Munipack, NewDestination );
+				if( D <= 50 ){
+					-aimed_agent( _ );
+					-+aimed( "false" );
+					.println("Voy a por municion");
+					-+checkamm("true");
+					-+newDest( NewDestination );
+					?newDest( pos( Xv, Y, Z ) );
+					!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, pos( Xv, Y, Z), ""));
+				}
+			}
+		}
+
+		if(checkhp("false") & checkamm("false")){
+			//.println("BUSCO ENEMIGOS");
 			?enemies( Enem );
 			.length( Enem, EnemLength );
 			if( EnemLength > 0 ) {
@@ -132,17 +221,60 @@ agent_in_the_middle( _ ).
 				}
 			}
 		}
+		
 	}
 	-bucle( _ );
 	-auxC( _ )
 	.
 
 
++get_medipack( Position )[ source( S ) ]
+	<-
+	-+lapos(Position);
+	?lapos(pos(W,J,K));
+	.println("Recibo la posicion: ",W,",",J,",",K);
+	.println("HAN TIRADO UN MEDIPACK");
+	?my_health(Mivida);
+	if ( Mivida <= 25) {
+		.println("LO NECESITO");
+		?my_position( X, Y, Z );
+		!fw_distance( pos( X, Y, Z ), Position );
+		?fw_distance( D );
+		if ( D <= 300 ) {
+			.println("Tengo poca vida y estoy cerca, voy a por el medipack");
+			!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, Position , ""));
+		}
+	}
+	.
+
++get_ammopack( Position )[ source( S ) ]
+	<-
+	-+lapos(Position);
+	?lapos(pos(W,J,K));
+	.println("Recibo la posicion: ",W,",",J,",",K);
+	.println("HAN TIRADO UN AMMOPACK");
+	?my_ammo(Miammo);
+	if ( Miammo <= 25) {
+		.println("LO NECESITO");
+		?my_position( X, Y, Z );
+		!fw_distance( pos( X, Y, Z ), Position );
+		?fw_distance( D );
+		if ( D <= 300 ) {
+			.println("Tengo poca vida y estoy cerca, voy a por el ammopack");
+			!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, Position , ""));
+		}
+	}
+	.
+
 +get_agent_to_aimNew( Recagente )[ source( S ) ]
 	<-
 	?aimed( Apuntando );
 	?type( Clase );
-	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" ) {
+	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" &
+			not (checkhp("true")) & not (checkamm("true")) ) {
+		?checkhp(Yolouno);
+		?checkamm(Yolodos);
+		.println("Me tiro a por el enemigo con ",Yolouno ,"y ",Yolodos);
 		?my_position( X, Y, Z );
 		.nth( 6, Recagente, Posicion );
 		-+posMiddle( Posicion );
@@ -173,7 +305,9 @@ agent_in_the_middle( _ ).
 +!perform_aim_action
 	<-  // Aimed agents have the following format:
 	// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-	.println( "AIM ACTION" );
+	?checkhp(Yolouno);
+	?checkamm(Yolodos);
+	//.println( "AIM ACTION CON : ", Yolouno, ",",Yolodos );
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, Length );
 	?aimed_agent( AimedAgent );
@@ -188,14 +322,8 @@ agent_in_the_middle( _ ).
 
 	?my_formattedTeam( MyTeam );
 	if ( auxmyteamcod( Auxmymyteamcod ) & AimedAgentTeam == Auxmymyteamcod ) {
-		.nth( 6, AimedAgent, NewDestination );
-		-+newDest( NewDestination );
-		?newDest( pos( Xv, Y, Z ) );
-		!agent_in_the_middle( Xv, Y, Z );
-		?agent_in_the_middle( Isthereagent );
-
+		
 		+bucle( 0 );
-		+checker("false");
 		.nth( 0, AimedAgent, Nameaimed );
 		while ( bucle( X ) & ( X < Length ) ) {
 			.nth( X, FOVObjects, Object );
@@ -203,28 +331,33 @@ agent_in_the_middle( _ ).
 			// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
 			.nth( 0, Object, Namelist );
 			if ( Nameaimed == Namelist ) {  // Only if I'm ALLIED
-				-+checker( "true" );
-				!fw_follow( Object, 1 );
-				?fw_follow( Task );
-				!fw_add_task( Task );
-				-+bucle( Length );
+				-+checker("true");
+				.nth( 6, AimedAgent, NewDestination );
+				-+newDest( NewDestination );
+				?newDest( pos( Xv, Y, Z ) );
+				!agent_in_the_middle( Xv, Y, Z );
+				?agent_in_the_middle( Isthereagent );
+
+				if ( Isthereagent == "true" ) {
+					-aimed_agent( _ );
+					-+aimed( "false" );
+				} else {
+					!fw_follow( Object, 1 );
+					?fw_follow( Task );
+					!fw_add_task( Task );
+					-+bucle( Length );
+				}
 			} else {
 				-+bucle( X + 1 );
 			}
 		}
-		-bucle( _ );
-
-		if ( Isthereagent == "true" ) {
-			-aimed_agent( _ );
-			-+aimed( "false" );
-		}
-
-
+		
 		if ( checker( Check ) & Check == "false" ) {
 			-aimed_agent( _ );
 			-+aimed( "false" );
-		}
-
+		} 
+		
 		-checker( _ );
+		-bucle( _ );
 	}
 	.
