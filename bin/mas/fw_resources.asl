@@ -58,6 +58,7 @@
 	if ( Dist < 125 & Ammo < 30 ) {
 		// Give ammo.
 		!fw_add_task( task( 9999, "TASK_GIVE_AMMOPAKS", M, pos( X, Y, Z ), "" ) );
+		-+provision_position( X, Y, Z, M );
 		//.send(M, tell, "cfa_agree");
 		.concat( "cfa_agree", Content );
 		.send_msg_with_conversation_id( M, tell, Content, "CFA" );
@@ -88,6 +89,7 @@
 	if ( Dist < 75 & Salud < 50 ) {
 		// Give medpack.
 		!fw_add_task( task( 9999, "TASK_GIVE_MEDICPAKS", M, pos( X, Y, Z ), "" ) );
+		-+provision_position( X, Y, Z, M );
 		// .send(M, tell, "cfm_agree");
 		.concat( "cfm_agree", Content );
 		.send_msg_with_conversation_id( M, tell, Content, "CFM" );
@@ -114,7 +116,10 @@
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!perform_no_ammo_action .
++!perform_no_ammo_action
+	<-
+	!performThresholdAction;
+	.
 
 /**
  * Action to do when an agent is being shot.
@@ -125,4 +130,24 @@
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!perform_injury_action .
++!perform_injury_action
+	<-
+	!performThresholdAction;
+	.
+
+//////////////////////////////////////
+//  DESTINATION_REACHED_NOTIFICATION
+//////////////////////////////////////
+
++pos( X, Y, Z ) : provision_position( X, Y, Z, O )
+	<-
+	.println( "Pack provisioned!" );
+	.concat( "provisioned_position(", X, ", ", Y, ", ", Z, ")", Content );
+	.send_msg_with_conversation_id( O, tell, Content, "CFM" );
+	.
+
++provisioned_position( X, Y, Z )
+	<-
+	.println( "Pack ready!" );
+	!fw_add_task( task( 9999, "TASK_GOTO_POSITION", M, pos( X, Y, Z ), "" ) );
+	.
