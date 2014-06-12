@@ -85,12 +85,23 @@
 	!fw_distance( pos( X, Y, Z ), pos( Myx, Myy, Myz ) );
 	?fw_distance( Dist );
 	// If distance is lower than threshold.
-	if ( Dist < 75 & Salud < 50 ) {
+	if ( Dist < 75 & Salud < 25 ) {
 		// Give medpack.
 		!fw_add_task( task( 9999, "TASK_GIVE_MEDICPAKS", M, pos( X, Y, Z ), "" ) );
 		// .send(M, tell, "cfm_agree");
 		.concat( "cfm_agree", Content );
 		.send_msg_with_conversation_id( M, tell, Content, "CFM" );
+		.concat( "+get_medipack( ",pos(Myx,Myy,Myz),")", Messg );
+		?team(Miequipo);
+		.my_team( Miequipo, E );
+		.length( E, L );
+		+auxC( 0 );
+		while ( auxC( C ) & C < L ) {
+			.nth( C, E, Target );
+			.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
+			-+auxC( C + 1 );
+		}
+		-auxC( _ );
 		-+state( standing );
 	} else {
 		// Ingore.

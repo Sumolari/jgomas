@@ -4,6 +4,8 @@
 
 maxDistToShoot( 15 ).
 agent_in_the_middle( _ ).
+checkhp("false").
+checkamm("false").
 
 /*
 * Guarda en una variable si hay algún agente aliado en el camino o no
@@ -73,18 +75,63 @@ agent_in_the_middle( _ ).
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, Length );
 	+enemies( [] );
+	+packs( [] );
+	+packsamm( [] );
+	?my_health(Mivida);
+	?my_ammo(Miammo);
 
 	if ( Length > 0 ) {
 		if ( aimed( "false" ) & not( objectivePackTaken( on ) ) ) {
 			+bucle( 0 );
+			-+checkhp("false");
+			-+checkamm("false");
+
 			while ( bucle( X ) & ( X < Length ) ) {
 				.nth( X, FOVObjects, Object );
+				
 				// Object structure
 				// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
 				.nth( 2, Object, Type );
 
-				if ( Type > 1000 ) {
-				} else {
+				if ( Type == 1001 ) {
+					.nth( 1, Object, Team );
+					?my_formattedTeam( MyTeam );
+
+					if ( team( "ALLIED" ) ) {
+						if ( Team == 100 ) {  // Only if I'm ALLIED
+							?packs( Packs );
+							.concat( Packs, [Object], Packsd );
+							-+packs( Packsd );
+						}
+					} else {
+						if ( Team == 200 ) {  // Only if I'm ALLIED
+							?packs( Packs );
+							.concat( Packs, [Object], Packsd );
+							-+packs( Packsd );
+						}
+					}
+				} 
+
+				if ( Type == 1002 ) {
+					.nth( 1, Object, Team );
+					?my_formattedTeam( MyTeam );
+
+					if ( team( "ALLIED" ) ) {
+						if ( Team == 100 ) {  // Only if I'm ALLIED
+							?packsamm( Packsa );
+							.concat( Packsa, [Object], Packsad );
+							-+packsamm( Packsad );
+						}
+					} else {
+						if ( Team == 200 ) {  // Only if I'm ALLIED
+							?packsamm( Packsa );
+							.concat( Packsa, [Object], Packsad );
+							-+packsamm( Packsad );
+						}
+					}
+				} 
+
+				if(Type <= 1000) {
 					// Object may be an enemy
 					.nth( 1, Object, Team );
 					?my_formattedTeam( MyTeam );
@@ -103,30 +150,75 @@ agent_in_the_middle( _ ).
 						}
 					}
 				}
+
 				-+bucle( X + 1 );
 			}
 
-			?enemies( Enem );
-			.length( Enem, EnemLength );
-			if( EnemLength > 0 ) {
-				!fw_nearest( Enem );
-				?fw_nearest( Cagent, PosAgent, D );
-				.nth( 6, Cagent, NewDestination );
-				-+newDest( NewDestination );
-				?newDest( pos( Xv, Y, Z ) );
-				!agent_in_the_middle( Xv, Y, Z );
-				?agent_in_the_middle( Isthereagent );
-				if ( Isthereagent == "false" ) {
-					+aimed_agent( Cagent );
-					-+aimed( "true" );
-					.my_team( "ALLIED", E );
-					.length( E, L );
-					+auxC( 0 );
-					while ( auxC( C ) & C < L ) {
-						.nth( C, E, Target );
-						.concat( "get_agent_to_aimNew(", Cagent, ")", Messg );
-						.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
-						-+auxC( C + 1 );
+			if(Mivida <= 25){
+				.println("NECESITO VIDA");
+				?packs( PacksVida );
+				.length( PacksVida, Pvlength);
+				if( Pvlength > 0 ) {
+					!fw_nearest( PacksVida );
+					?fw_nearest( Hppack, Pospack, D );
+					.nth( 6, Hppack, NewDestination );
+					if( D <= 5 ){
+						-aimed_agent( _ );
+						-+aimed( "false" );
+						.println("Voy a por botiquines");
+						-+checkhp("true");
+						-+newDest( NewDestination );
+						?newDest( pos( Xv, Y, Z ) );
+						!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, pos( Xv, Y, Z), ""));
+					}
+				}
+			}
+
+			if(Miammo < 30 & checkhp("false")){
+				.println("NECESITO AMMO");
+				?packsamm( Packsmuni );
+				.length( Packsmuni, Ammlength);
+				if( Ammlength > 0 ) {
+					.println("HAY AMMO");
+					!fw_nearest( Packsmuni );
+					?fw_nearest( Munipack, Pospack, D );
+					.nth( 6, Munipack, NewDestination );
+					if( D <= 5 ){
+						-aimed_agent( _ );
+						-+aimed( "false" );
+						.println("Voy a por municion");
+						-+checkamm("true");
+						-+newDest( NewDestination );
+						?newDest( pos( Xv, Y, Z ) );
+						!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, pos( Xv, Y, Z), ""));
+					}
+				}
+			}
+
+			if(checkhp("false") & checkamm("false")){
+				.println("BUSCO ENEMIGOS");
+				?enemies( Enem );
+				.length( Enem, EnemLength );
+				if( EnemLength > 0 ) {
+					!fw_nearest( Enem );
+					?fw_nearest( Cagent, PosAgent, D );
+					.nth( 6, Cagent, NewDestination );
+					-+newDest( NewDestination );
+					?newDest( pos( Xv, Y, Z ) );
+					!agent_in_the_middle( Xv, Y, Z );
+					?agent_in_the_middle( Isthereagent );
+					if ( Isthereagent == "false" ) {
+						+aimed_agent( Cagent );
+						-+aimed( "true" );
+						.my_team( "ALLIED", E );
+						.length( E, L );
+						+auxC( 0 );
+						while ( auxC( C ) & C < L ) {
+							.nth( C, E, Target );
+							.concat( "get_agent_to_aimNew(", Cagent, ")", Messg );
+							.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
+							-+auxC( C + 1 );
+						}
 					}
 				}
 			}
@@ -137,11 +229,31 @@ agent_in_the_middle( _ ).
 	.
 
 
++get_medipack( Position )[ source( S ) ]
+	<-
+	.println("HAN TIRADO UN MEDIPACK");
+	?my_health(Mivida);
+	if ( Mivida <= 25) {
+		.println("LO NECESITO");
+		?my_position( X, Y, Z );
+		!fw_distance( pos( X, Y, Z ), Position );
+		?fw_distance( D );
+		if ( D <= 300 ) {
+			.println("Tengo poca vida y estoy cerca, voy a por el pack");
+			!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, Position , ""));
+		}
+	}
+	.
+
 +get_agent_to_aimNew( Recagente )[ source( S ) ]
 	<-
 	?aimed( Apuntando );
 	?type( Clase );
-	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" ) {
+	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" &
+			not (checkhp("true")) & not (checkamm("true")) ) {
+		?checkhp(Yolouno);
+		?checkamm(Yolodos);
+		.println("Me tiro a por el enemigo con ",Yolouno ,"y ",Yolodos);
 		?my_position( X, Y, Z );
 		.nth( 6, Recagente, Posicion );
 		-+posMiddle( Posicion );
@@ -172,7 +284,9 @@ agent_in_the_middle( _ ).
 +!perform_aim_action
 	<-  // Aimed agents have the following format:
 	// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-	.println( "AIM ACTION" );
+	?checkhp(Yolouno);
+	?checkamm(Yolodos);
+	//.println( "AIM ACTION CON : ", Yolouno, ",",Yolodos );
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, Length );
 	?aimed_agent( AimedAgent );
