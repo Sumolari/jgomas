@@ -19,7 +19,7 @@ agent_in_the_middle( _ ).
 		.nth( X, FOVObjects, Object );
 		// Object structure
 		// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-		.nth( 2, Object, Team );
+		.nth( 1, Object, Team );
 		if ( team( "ALLIED" ) ) {
 			if ( Team == 100 ) { // Only if I'm ALLIED
 				?allies( Ally );
@@ -45,7 +45,7 @@ agent_in_the_middle( _ ).
 		-+posMiddle( Posicion );
 		?posMiddle( pos( Xa, Ya, Za ) );
 		?my_position( X, Y, Z );
-		if ( math.abs( ( Ze - Z ) * ( Xa - X ) - ( Xe - X ) * ( Za - Z ) ) <= 3 ) {
+		if ( math.abs( ( Ze - Z ) * ( Xa - X ) - ( Xe - X ) * ( Za - Z ) ) <= 100 ) {
 			.println( "tu puta vida nano" );
 			-+agent_in_the_middle( "true" );
 		}
@@ -88,8 +88,6 @@ agent_in_the_middle( _ ).
 				} else {
 					// Object may be an enemy
 					.nth( 1, Object, Team );
-					?my_formattedTeam( MyTeam );
-
 					if ( team( "ALLIED" ) ) {
 						if ( Team == 200 ) {  // Only if I'm ALLIED
 							?enemies( Enem );
@@ -120,7 +118,9 @@ agent_in_the_middle( _ ).
 				if ( Isthereagent == "false" ) {
 					+aimed_agent( Cagent );
 					-+aimed( "true" );
-					.my_team( "ALLIED", E );
+					.nth( 1, Cagent, Teamagent );
+					?team( Myteam );
+					.my_team( Myteam, E );
 					.length( E, L );
 					+auxC( 0 );
 					while ( auxC( C ) & C < L ) {
@@ -129,6 +129,9 @@ agent_in_the_middle( _ ).
 						.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
 						-+auxC( C + 1 );
 					}
+				} else{
+					?aimed(Apuntado);
+					//.println("Hay tios en medio asi que no cojo el objetivo: ",Apuntado);
 				}
 			}
 		}
@@ -142,7 +145,7 @@ agent_in_the_middle( _ ).
 	<-
 	?aimed( Apuntando );
 	?type( Clase );
-	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" ) {
+	if ( not ( Recagente == -1 ) & Apuntando == "false" ) {
 		?my_position( X, Y, Z );
 		.nth( 6, Recagente, Posicion );
 		-+posMiddle( Posicion );
@@ -150,7 +153,9 @@ agent_in_the_middle( _ ).
 		!fw_distance( pos( X, Y, Z ), pos( Xa, Ya, Za ) );
 		?fw_distance( D );
 		?maxDistToShoot( Maxdist );
-		if ( D <= Maxdist ) {
+		!agent_in_the_middle( Xa, Ya, Za );
+		?agent_in_the_middle( Isthereagent );
+		if ( D <= Maxdist & Isthereagent == "false") {
 			-+aimed_agent( Recagente );
 			-+aimed( "true" );
 		}
@@ -173,7 +178,7 @@ agent_in_the_middle( _ ).
 +!perform_aim_action
 	<-  // Aimed agents have the following format:
 	// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-	.println( "AIM ACTION" );
+	//.println( "AIM ACTION" );
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, Length );
 	?aimed_agent( AimedAgent );
@@ -197,34 +202,33 @@ agent_in_the_middle( _ ).
 		+bucle( 0 );
 		+checker("false");
 		.nth( 0, AimedAgent, Nameaimed );
-		while ( bucle( X ) & ( X < Length ) ) {
-			.nth( X, FOVObjects, Object );
-			// Object structure
-			// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-			.nth( 0, Object, Namelist );
-			if ( Nameaimed == Namelist ) {  // Only if I'm ALLIED
-				-+checker( "true" );
-				!fw_follow( Object, 1 );
-				?fw_follow( Task );
-				!fw_add_task( Task );
-				-+bucle( Length );
-			} else {
-				-+bucle( X + 1 );
-			}
-		}
-		-bucle( _ );
-
 		if ( Isthereagent == "true" ) {
 			-aimed_agent( _ );
 			-+aimed( "false" );
+		} else{
+			while ( bucle( X ) & ( X < Length ) ) {
+				.nth( X, FOVObjects, Object );
+				// Object structure
+				// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+				.nth( 0, Object, Namelist );
+				if ( Nameaimed == Namelist ) {  // Only if I'm ALLIED
+					-+checker( "true" );
+					!fw_follow( Object, 1 );
+					?fw_follow( Task );
+					!fw_add_task( Task );
+					-+bucle( Length );
+				} else {
+					-+bucle( X + 1 );
+				}
+			}
+			-bucle( _ );
+
+			if ( checker( Check ) & Check == "false" ) {
+				-aimed_agent( _ );
+				-+aimed( "false" );
+			}
 		}
-
-
-		if ( checker( Check ) & Check == "false" ) {
-			-aimed_agent( _ );
-			-+aimed( "false" );
-		}
-
 		-checker( _ );
+
 	}
 	.
