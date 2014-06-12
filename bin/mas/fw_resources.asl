@@ -91,7 +91,7 @@
 		// .send(M, tell, "cfm_agree");
 		.concat( "cfm_agree", Content );
 		.send_msg_with_conversation_id( M, tell, Content, "CFM" );
-		.concat( "+get_medipack( ",pos(Myx,Myy,Myz),")", Messg );
+		.concat( "get_medipack( ",pos(Myx,Myy,Myz),")", Messg );
 		?team(Miequipo);
 		.my_team( Miequipo, E );
 		.length( E, L );
