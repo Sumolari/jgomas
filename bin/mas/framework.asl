@@ -31,6 +31,25 @@ currentObjective(0, 0, 0).
 	}
 	.
 
++flagpos(Fx, Fy, Fz)[source(A)] : map_12( yes ) <-
+	-+tasks([]);
+	-+my_objective(Fx, Fy, Fz);
+	!add_task(
+		task(
+			4500,
+			"TASK_MEAT_SHIELD",
+			M,
+			pos(
+				Fx,
+				0,
+				Fz
+			),
+			""
+		)
+	);
+	-flagpos(Fx, Fy, Fz)[source(A)]
+	.
+
 +flagpos(Fx, Fy, Fz)[source(A)] <-
 	-+tasks([]);
 	!fw_add_task(
