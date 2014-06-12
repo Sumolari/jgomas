@@ -48,7 +48,6 @@ checkamm("false").
 		?posMiddle( pos( Xa, Ya, Za ) );
 		?my_position( X, Y, Z );
 		if ( math.abs( ( Ze - Z ) * ( Xa - X ) - ( Xe - X ) * ( Za - Z ) ) <= 100 ) {
-			.println( "tu puta vida nano" );
 			-+agent_in_the_middle( "true" );
 		}
 		-+auxM( C + 1 );
@@ -155,7 +154,7 @@ checkamm("false").
 			-+bucle( X + 1 );
 		}
 
-		if ( Mivida <= 25 ) {
+		if ( Mivida <= 50 ) {
 			?packs( PacksVida );
 			.length( PacksVida, Pvlength );
 			if ( Pvlength > 0 ) {
@@ -176,7 +175,7 @@ checkamm("false").
 			}
 		}
 
-		if ( Miammo < 30 & checkhp( "false" ) ) {
+		if ( Miammo < 35 & checkhp( "false" ) ) {
 			?packsamm( Packsmuni );
 			.length( Packsmuni, Ammlength );
 			if( Ammlength > 0 ) {
@@ -242,12 +241,12 @@ checkamm("false").
 	//.println( "Recibo la posicion: ", W, ",", J, ",", K );
 	//.println( "HAN TIRADO UN MEDIPACK" );
 	?my_health( Mivida );
-	if ( Mivida <= 25 ) {
+	if ( Mivida <= 50 ) {
 		//.println( "LO NECESITO" );
 		?my_position( X, Y, Z );
 		!fw_distance( pos( X, Y, Z ), Position );
 		?fw_distance( D );
-		if ( D <= 300 ) {
+		if ( D <= 50 ) {
 			.println( "Tengo poca vida y estoy cerca, voy a por el medipack" );
 			!fw_add_task(
 				task( 7500, "TASK_GOTO_POSITION_3", M, Position , "" )
@@ -263,7 +262,7 @@ checkamm("false").
 	//.println( "Recibo la posicion: ", W, ",", J, ",", K );
 	//.println( "HAN TIRADO UN AMMOPACK" );
 	?my_ammo( Miammo );
-	if ( Miammo <= 25 ) {
+	if ( Miammo <= 35 ) {
 		//.println("LO NECESITO");
 		?my_position( X, Y, Z );
 		!fw_distance( pos( X, Y, Z ), Position );
@@ -316,8 +315,6 @@ checkamm("false").
 	<-
 	// Aimed agents have the following format:
 	// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-	?checkhp( Yolouno );
-	?checkamm( Yolodos );
 	//.println( "AIM ACTION CON : ", Yolouno, ",",Yolodos );
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, Length );
