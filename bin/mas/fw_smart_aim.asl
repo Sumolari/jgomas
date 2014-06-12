@@ -21,7 +21,7 @@ checkamm("false").
 		.nth( X, FOVObjects, Object );
 		// Object structure
 		// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-		.nth( 2, Object, Team );
+		.nth( 1, Object, Team );
 		if ( team( "ALLIED" ) ) {
 			if ( Team == 100 ) { // Only if I'm ALLIED
 				?allies( Ally );
@@ -47,7 +47,8 @@ checkamm("false").
 		-+posMiddle( Posicion );
 		?posMiddle( pos( Xa, Ya, Za ) );
 		?my_position( X, Y, Z );
-		if ( math.abs( ( Ze - Z ) * ( Xa - X ) - ( Xe - X ) * ( Za - Z ) ) <= 3 ) {
+		if ( math.abs( ( Ze - Z ) * ( Xa - X ) - ( Xe - X ) * ( Za - Z ) ) <= 100 ) {
+			.println( "tu puta vida nano" );
 			-+agent_in_the_middle( "true" );
 		}
 		-+auxM( C + 1 );
@@ -64,8 +65,9 @@ checkamm("false").
 *
 * This plan scans the list <tt> m_FOVObjects</tt> (objects in the Field
 * Of View of the agent) looking for an enemy. If an enemy agent is found, a
-* value of aimed("true") is returned. Note that there is no criterion (proximity, etc.) for the
-* enemy found. Otherwise, the return value is aimed("false")
+* value of aimed("true") is returned. Note that there is no criterion
+* (proximity, etc.) for the enemy found. Otherwise, the return value is
+* aimed("false")
 *
 * <em> It's very useful to overload this plan. </em>
 *
@@ -87,7 +89,7 @@ checkamm("false").
 
 		while ( bucle( X ) & ( X < Length ) ) {
 			.nth( X, FOVObjects, Object );
-			
+
 			// Object structure
 			// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
 			.nth( 2, Object, Type );
@@ -109,7 +111,7 @@ checkamm("false").
 						-+packs( Packsd );
 					}
 				}
-			} 
+			}
 
 			if ( Type == 1002 ) {
 				.nth( 1, Object, Team );
@@ -128,9 +130,9 @@ checkamm("false").
 						-+packsamm( Packsad );
 					}
 				}
-			} 
+			}
 
-			if(Type <= 1000) {
+			if( Type <= 1000 ) {
 				// Object may be an enemy
 				.nth( 1, Object, Team );
 				?my_formattedTeam( MyTeam );
@@ -153,49 +155,49 @@ checkamm("false").
 			-+bucle( X + 1 );
 		}
 
-		if(Mivida <= 25){
-			.println("NECESITO VIDA");
+		if ( Mivida <= 25 ) {
 			?packs( PacksVida );
-			.length( PacksVida, Pvlength);
-			if( Pvlength > 0 ) {
+			.length( PacksVida, Pvlength );
+			if ( Pvlength > 0 ) {
 				!fw_nearest( PacksVida );
 				?fw_nearest( Hppack, Pospack, D );
 				.nth( 6, Hppack, NewDestination );
-				if( D <= 50 ){
+				if ( D <= 50 ) {
 					-aimed_agent( _ );
 					-+aimed( "false" );
-					.println("Voy a por botiquines");
+					.println( "Voy a por botiquines" );
 					-+checkhp("true");
 					-+newDest( NewDestination );
 					?newDest( pos( Xv, Y, Z ) );
-					!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, pos( Xv, Y, Z), ""));
+					!fw_add_task(
+						task( 7500, "TASK_GOTO_POSITION_3", M, pos( Xv, Y, Z ), "" )
+					);
 				}
 			}
 		}
 
-		if(Miammo < 30 & checkhp("false")){
-			.println("NECESITO AMMO");
+		if ( Miammo < 30 & checkhp( "false" ) ) {
 			?packsamm( Packsmuni );
-			.length( Packsmuni, Ammlength);
+			.length( Packsmuni, Ammlength );
 			if( Ammlength > 0 ) {
-				.println("HAY AMMO");
 				!fw_nearest( Packsmuni );
 				?fw_nearest( Munipack, Pospack, D );
 				.nth( 6, Munipack, NewDestination );
 				if( D <= 50 ){
 					-aimed_agent( _ );
 					-+aimed( "false" );
-					.println("Voy a por municion");
-					-+checkamm("true");
+					.println( "Voy a por municion" );
+					-+checkamm( "true" );
 					-+newDest( NewDestination );
 					?newDest( pos( Xv, Y, Z ) );
-					!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, pos( Xv, Y, Z), ""));
+					!fw_add_task(
+						task(7500, "TASK_GOTO_POSITION_3", M, pos( Xv, Y, Z ), "" )
+					);
 				}
 			}
 		}
 
-		if(checkhp("false") & checkamm("false")){
-			//.println("BUSCO ENEMIGOS");
+		if ( checkhp( "false" ) & checkamm( "false" ) ) {
 			?enemies( Enem );
 			.length( Enem, EnemLength );
 			if( EnemLength > 0 ) {
@@ -209,7 +211,9 @@ checkamm("false").
 				if ( Isthereagent == "false" ) {
 					+aimed_agent( Cagent );
 					-+aimed( "true" );
-					.my_team( "ALLIED", E );
+					.nth( 1, Cagent, Teamagent );
+					?team( Myteam );
+					.my_team( Myteam, E );
 					.length( E, L );
 					+auxC( 0 );
 					while ( auxC( C ) & C < L ) {
@@ -218,10 +222,13 @@ checkamm("false").
 						.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
 						-+auxC( C + 1 );
 					}
+				} else{
+					?aimed(Apuntado);
+					//.println("Hay tios en medio asi que no cojo el objetivo: ",Apuntado);
 				}
 			}
 		}
-		
+
 	}
 	-bucle( _ );
 	-auxC( _ )
@@ -230,38 +237,42 @@ checkamm("false").
 
 +get_medipack( Position )[ source( S ) ]
 	<-
-	-+lapos(Position);
-	?lapos(pos(W,J,K));
-	.println("Recibo la posicion: ",W,",",J,",",K);
-	.println("HAN TIRADO UN MEDIPACK");
-	?my_health(Mivida);
-	if ( Mivida <= 25) {
-		.println("LO NECESITO");
+	-+lapos( Position );
+	?lapos( pos( W, J, K ) );
+	//.println( "Recibo la posicion: ", W, ",", J, ",", K );
+	//.println( "HAN TIRADO UN MEDIPACK" );
+	?my_health( Mivida );
+	if ( Mivida <= 25 ) {
+		//.println( "LO NECESITO" );
 		?my_position( X, Y, Z );
 		!fw_distance( pos( X, Y, Z ), Position );
 		?fw_distance( D );
 		if ( D <= 300 ) {
-			.println("Tengo poca vida y estoy cerca, voy a por el medipack");
-			!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, Position , ""));
+			.println( "Tengo poca vida y estoy cerca, voy a por el medipack" );
+			!fw_add_task(
+				task( 7500, "TASK_GOTO_POSITION_3", M, Position , "" )
+			);
 		}
 	}
 	.
 
 +get_ammopack( Position )[ source( S ) ]
 	<-
-	-+lapos(Position);
-	?lapos(pos(W,J,K));
-	.println("Recibo la posicion: ",W,",",J,",",K);
-	.println("HAN TIRADO UN AMMOPACK");
-	?my_ammo(Miammo);
-	if ( Miammo <= 25) {
-		.println("LO NECESITO");
+	-+lapos( Position );
+	?lapos( pos( W, J, K ) );
+	//.println( "Recibo la posicion: ", W, ",", J, ",", K );
+	//.println( "HAN TIRADO UN AMMOPACK" );
+	?my_ammo( Miammo );
+	if ( Miammo <= 25 ) {
+		//.println("LO NECESITO");
 		?my_position( X, Y, Z );
 		!fw_distance( pos( X, Y, Z ), Position );
 		?fw_distance( D );
 		if ( D <= 300 ) {
-			.println("Tengo poca vida y estoy cerca, voy a por el ammopack");
-			!fw_add_task( task(7500, "TASK_GOTO_POSITION_3", M, Position , ""));
+			.println( "Tengo poca vida y estoy cerca, voy a por el ammopack" );
+			!fw_add_task(
+				task( 7500, "TASK_GOTO_POSITION_3", M, Position , "" )
+			);
 		}
 	}
 	.
@@ -271,10 +282,7 @@ checkamm("false").
 	?aimed( Apuntando );
 	?type( Clase );
 	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" &
-			not (checkhp("true")) & not (checkamm("true")) ) {
-		?checkhp(Yolouno);
-		?checkamm(Yolodos);
-		.println("Me tiro a por el enemigo con ",Yolouno ,"y ",Yolodos);
+			not ( checkhp( "true" ) ) & not ( checkamm( "true" ) ) ) {
 		?my_position( X, Y, Z );
 		.nth( 6, Recagente, Posicion );
 		-+posMiddle( Posicion );
@@ -282,7 +290,9 @@ checkamm("false").
 		!fw_distance( pos( X, Y, Z ), pos( Xa, Ya, Za ) );
 		?fw_distance( D );
 		?maxDistToShoot( Maxdist );
-		if ( D <= Maxdist ) {
+		!agent_in_the_middle( Xa, Ya, Za );
+		?agent_in_the_middle( Isthereagent );
+		if ( D <= Maxdist & Isthereagent == "false") {
 			-+aimed_agent( Recagente );
 			-+aimed( "true" );
 		}
@@ -303,10 +313,11 @@ checkamm("false").
 *
 */
 +!perform_aim_action
-	<-  // Aimed agents have the following format:
+	<-
+	// Aimed agents have the following format:
 	// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-	?checkhp(Yolouno);
-	?checkamm(Yolodos);
+	?checkhp( Yolouno );
+	?checkamm( Yolodos );
 	//.println( "AIM ACTION CON : ", Yolouno, ",",Yolodos );
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, Length );
@@ -322,42 +333,42 @@ checkamm("false").
 
 	?my_formattedTeam( MyTeam );
 	if ( auxmyteamcod( Auxmymyteamcod ) & AimedAgentTeam == Auxmymyteamcod ) {
-		
-		+bucle( 0 );
-		.nth( 0, AimedAgent, Nameaimed );
-		while ( bucle( X ) & ( X < Length ) ) {
-			.nth( X, FOVObjects, Object );
-			// Object structure
-			// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-			.nth( 0, Object, Namelist );
-			if ( Nameaimed == Namelist ) {  // Only if I'm ALLIED
-				-+checker("true");
-				.nth( 6, AimedAgent, NewDestination );
-				-+newDest( NewDestination );
-				?newDest( pos( Xv, Y, Z ) );
-				!agent_in_the_middle( Xv, Y, Z );
-				?agent_in_the_middle( Isthereagent );
+		.nth( 6, AimedAgent, NewDestination );
+		-+newDest( NewDestination );
+		?newDest( pos( Xv, Y, Z ) );
+		!agent_in_the_middle( Xv, Y, Z );
+		?agent_in_the_middle( Isthereagent );
 
-				if ( Isthereagent == "true" ) {
-					-aimed_agent( _ );
-					-+aimed( "false" );
-				} else {
+		if ( Isthereagent == "true" ) {
+			-aimed_agent( _ );
+			-+aimed( "false" );
+		} else {
+			+bucle( 0 );
+			+checker("false");
+			.nth( 0, AimedAgent, Nameaimed );
+			while ( bucle( X ) & ( X < Length ) ) {
+				.nth( X, FOVObjects, Object );
+				// Object structure
+				// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+				.nth( 0, Object, Namelist );
+				if ( Nameaimed == Namelist ) {  // Only if I'm ALLIED
+					-+checker( "true" );
 					!fw_follow( Object, 1 );
 					?fw_follow( Task );
 					!fw_add_task( Task );
 					-+bucle( Length );
+				} else {
+					-+bucle( X + 1 );
 				}
-			} else {
-				-+bucle( X + 1 );
 			}
+			-bucle( _ );
+
+			if ( checker( Check ) & Check == "false" ) {
+				-aimed_agent( _ );
+				-+aimed( "false" );
+			}
+			-checker( _ );
 		}
-		
-		if ( checker( Check ) & Check == "false" ) {
-			-aimed_agent( _ );
-			-+aimed( "false" );
-		} 
-		
-		-checker( _ );
-		-bucle( _ );
+
 	}
 	.
