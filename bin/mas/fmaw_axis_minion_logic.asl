@@ -1,3 +1,5 @@
+{ include( "framework.asl" ) }
+
 /*******************************
 *
 * Actions definitions
@@ -34,4 +36,11 @@
 //  Initialize variables
 /////////////////////////////////
 
-+!init .
++!init
+	<-
+	!map_12;
+	if ( map_12( yes ) ) {
+		.println( "I'm at map 12!!" );
+		-+patrollingRadius( 140 );
+	}
+	.

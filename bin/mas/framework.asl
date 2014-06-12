@@ -73,3 +73,16 @@ currentObjective(0, 0, 0).
 		-+shouldContinue("YES");
 	}
 	.
+
++!map_12
+	<-
+	-+map_12( no );
+	check_position( pos( 115, 0, 44 ) ); // Maybe
+	.wait( 200 );
+	if ( position( invalid ) ) {
+		check_position( pos( 125, 0, 210 ) ); // Sure
+		if ( position( invalid ) ) {
+			-+map_12( yes );
+		}
+	}
+	.
