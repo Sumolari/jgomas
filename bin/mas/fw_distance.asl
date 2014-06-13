@@ -30,6 +30,11 @@
 	?fw_nearest( Agent, Position, Distance );
 	.println( "Nearest agent is ", Agent, " who is at ", Position, " (distance ", Distance, ")"  );
 */
++!fw_nearest( Agents )
+	<-
+	!fw_nearest( Agents, 0 )
+	.
+
 +!fw_nearest( Agents, K )
 	<-
 	// Save an arbitrary solution.
@@ -72,9 +77,11 @@
 		// Retrieve list.
 		?fw_nearest_aux_ordered( Sortedaux );
 		// Prepare new list.
-		.concat( Sortedaux, result( Targetaux, Targetpositionaux, Daux ), Newsortedaux );
+		.concat( Sortedaux, [ result( Targetaux, Targetpositionaux, Daux ) ], Newsortedaux );
 		// Store new list.
 		-+fw_nearest_aux_ordered( Newsortedaux );
+
+		.println( Newsortedaux );
 
 		// Clean auxiliar belief to repeat inner loop again.
 		-+fw_nearest( -1, pos( -1, -1, -1 ), 9999 );
@@ -82,17 +89,14 @@
 
 	// Retrieve final list.
 	?fw_nearest_aux_ordered( Thesortedlist );
-
 	// Retrieve k-nn.
 	.nth( K, Thesortedlist, Knn );
-
 	// Store it to process it.
 	-+fw_nearest( Knn );
 	// Extract data.
-	?fw_nearest( results( Ta, Tp, Df ) );
+	?fw_nearest( result( Ta, Tp, Df ) );
 	// Store final result.
 	-+fw_nearest( Ta, Tp, Df );
-
 
 	// Clean auxiliar beliefs.
 	-+fwn_aux_c( 0 );
