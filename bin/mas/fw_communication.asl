@@ -21,7 +21,10 @@
 /**
  * Ignore orders if I know where I should be.
  */
-+enemy_at_pos( _ ) : keeper_position( Ox, Oy, Oz ) .
++enemy_at_pos( pos( X, Y, Z ) ) : keeper_position( Ox, Oy, Oz )
+	<-
+	.println( "Ignoring enemy notification..." );
+	.
 
 /**
  * Reacts to an incoming beliefs about the position of an enemy.
@@ -32,7 +35,7 @@
 	!fw_distance( pos( X, Y, Z ) );
 	?fw_distance( D );
 	// If enemy is near enough...
-	if ( D < 60 & map_12( no ) ) {
+	if ( D < 80 & map_12( no ) ) {
 		// Get him!
 		!fw_add_task(
 			task(
@@ -51,14 +54,14 @@
 		if ( map_12( yes ) ) {
 			Aleatorio = math.random( 1 );
 			.println( Aleatorio );
-			if ( Aleatorio > 0.2 ) {
-				.println( "Going to bottom-right door" );
+			if ( Aleatorio > 0.4 ) {
+				.println( "Going to top-right" );
 				// Go to where enemies will be...
-				-+keeper_position( 228, 0, 214 );
+				-+keeper_position( 230, 0, 108 );
 			} else {
-				.println( "Going to bottom-left door" );
+				.println( "Going to bottom-right" );
 				// Go to where enemies will be...
-				-+keeper_position( 30, 0, 214 );
+				-+keeper_position( 215, 0, 150 );
 			}
 		} else {
 			// Go to flag just in case...

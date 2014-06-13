@@ -25,9 +25,13 @@
 
 	if ( Ar <= At ) {
 		?my_position( X, Y, Z );
-		.my_team( Desiredammoteam, E1 );
-		.concat( "fw_cfa(", X, ", ", Y, ", ", Z, ", ", Ar, ")", Content1 );
-		.send_msg_with_conversation_id( E1, tell, Content1, "CFA" );
+		if ( type( "CLASS_FIELDOPS" ) ) {
+			!fw_add_task( task( 9999, "TASK_GIVE_AMMOPAKS", M, pos( X, Y, Z ), "" ) );
+		} else {
+			.my_team( Desiredammoteam, E1 );
+			.concat( "fw_cfa(", X, ", ", Y, ", ", Z, ", ", Ar, ")", Content1 );
+			.send_msg_with_conversation_id( E1, tell, Content1, "CFA" );
+		}
 	}
 
 	?my_health_threshold( Ht );
@@ -35,9 +39,13 @@
 
 	if ( Hr <= Ht ) {
 		?my_position( X, Y, Z );
-		.my_team( Desiredmedicteam, E2 );
-		.concat( "fw_cfm(", X, ", ", Y, ", ", Z, ", ", Hr, ")", Content2 );
-		.send_msg_with_conversation_id( E2, tell, Content2, "CFM" );
+		if ( type( "CLASS_MEDIC" ) ) {
+			!fw_add_task( task( 9999, "TASK_GIVE_MEDICPAKS", M, pos( X, Y, Z ), "" ) );
+		} else {
+			.my_team( Desiredmedicteam, E2 );
+			.concat( "fw_cfm(", X, ", ", Y, ", ", Z, ", ", Hr, ")", Content2 );
+			.send_msg_with_conversation_id( E2, tell, Content2, "CFM" );
+		}
 	}
 	.
 

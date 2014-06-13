@@ -65,7 +65,7 @@
 	<-
 	!map_12;
 	if ( map_12( yes ) ) {
-		-+patrollingRadius( 140 );
+		-+patrollingRadius( 20 );
 	}
 	.
 

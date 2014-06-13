@@ -19,7 +19,7 @@ agent_in_the_middle( _ ).
 		.nth( X, FOVObjects, Object );
 		// Object structure
 		// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
-		.nth( 2, Object, Team );
+		.nth( 1, Object, Team );
 		if ( team( "ALLIED" ) ) {
 			if ( Team == 100 ) { // Only if I'm ALLIED
 				?allies( Ally );
@@ -45,8 +45,8 @@ agent_in_the_middle( _ ).
 		-+posMiddle( Posicion );
 		?posMiddle( pos( Xa, Ya, Za ) );
 		?my_position( X, Y, Z );
-		if ( math.abs( ( Ze - Z ) * ( Xa - X ) - ( Xe - X ) * ( Za - Z ) ) <= 3 ) {
-			.println( "tu puta vida nano" );
+		if ( math.abs( ( Ze - Z ) * ( Xa - X ) - ( Xe - X ) * ( Za - Z ) ) <= 0 ) {
+			//.println( "tu puta vida nano" );
 			-+agent_in_the_middle( "true" );
 		}
 		-+auxM( C + 1 );
@@ -120,15 +120,19 @@ agent_in_the_middle( _ ).
 				if ( Isthereagent == "false" ) {
 					+aimed_agent( Cagent );
 					-+aimed( "true" );
-					.my_team( "ALLIED", E );
-					.length( E, L );
-					+auxC( 0 );
-					while ( auxC( C ) & C < L ) {
-						.nth( C, E, Target );
+
+					if ( team( "ALLIED" ) ) {
+						.my_team( "ALLIED", E );
+					} else {
+						.my_team( "AXIS", E );
+					}
+					
+					if ( map_12( no ) ) {
 						.concat( "get_agent_to_aimNew(", Cagent, ")", Messg );
-						.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
+						.send_msg_with_conversation_id( E, tell, Messg, "INT" );
 						-+auxC( C + 1 );
 					}
+
 				}
 			}
 		}
@@ -142,7 +146,7 @@ agent_in_the_middle( _ ).
 	<-
 	?aimed( Apuntando );
 	?type( Clase );
-	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" & not( map_12( yes ) ) ) {
+	if ( not ( Recagente == -1 ) & Apuntando == "false" & Clase == "CLASS_SOLDIER" & map_12( no ) ) {
 		?my_position( X, Y, Z );
 		.nth( 6, Recagente, Posicion );
 		-+posMiddle( Posicion );
@@ -202,7 +206,7 @@ agent_in_the_middle( _ ).
 			// Object structure
 			// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
 			.nth( 0, Object, Namelist );
-			if ( Nameaimed == Namelist ) {  // Only if I'm ALLIED
+			if ( Nameaimed == Namelist ) {
 				-+checker( "true" );
 				!fw_follow( Object, 1 );
 				?fw_follow( Task );
