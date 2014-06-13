@@ -306,6 +306,7 @@ indpendent_mode( "NO" ).
 +!init
 	<-
 	!map_12;
+	!map_13;
 	if ( map_12( yes ) ) {
 		.println( "I'm at map 12!!" );
 	}
