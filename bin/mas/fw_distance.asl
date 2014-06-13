@@ -12,13 +12,13 @@
 +!fw_distance( pos( A, B, C ), pos( X, Y, Z ) )
 	<-
 	D = math.sqrt( ( A - X ) * ( A - X ) + ( B - Y ) * ( B - Y ) + ( C - Z ) * ( C - Z ) );
-	-+fw_distance( D )
+	-+fw_distance( D );
 	.
 
 +!fw_distance( pos( A, B, C ) )
 	<-
 	?my_position( X, Y, Z );
-	!fw_distance( pos( A, B, C ), pos( X, Y, Z ) )
+	!fw_distance( pos( A, B, C ), pos( X, Y, Z ) );
 	.
 
 // Given a list of agents, returns the nearest one to the agent using this plan.
@@ -37,10 +37,6 @@
 
 +!fw_nearest( Agents, K )
 	<-
-	// Save an arbitrary solution.
-	-+fw_nearest( -1, pos( -1, -1, -1 ), 9999 );
-	// Store internal counter.
-	+fwn_aux_c( 0 );
 	// Store length of list of agents.
 	.length( Agents, L );
 	// Retrieve my position.
@@ -51,6 +47,10 @@
 
 	// While full list is not sorted...
 	while ( fw_nearest_aux_ordered( Sortedlist ) & .length( Sortedlist, Lengthsorted ) & Lengthsorted < L ) {
+		// Store internal counter.
+		-+fwn_aux_c( 0 );
+		// Clean auxiliar belief to repeat inner loop again.
+		-+fw_nearest( -1, pos( -1, -1, -1 ), 9999 );
 
 		// While there are unchecked agents...
 		while( fwn_aux_c( C ) & C < L ) {
@@ -59,7 +59,7 @@
 			// Extract position.
 			.nth( 6, Target, Targetposition );
 			// Compute distance.
-			!fw_distance( pos( Myx, Myy, Myz ), Targetposition );
+			!fw_distance( Targetposition );
 			?fw_distance( D );
 			// Get previous minimum distance.
 			?fw_nearest( _, _, Prevd );
@@ -74,17 +74,13 @@
 
 		// Get k-nearest agent.
 		?fw_nearest( Targetaux, Targetpositionaux, Daux );
+
 		// Retrieve list.
 		?fw_nearest_aux_ordered( Sortedaux );
 		// Prepare new list.
 		.concat( Sortedaux, [ result( Targetaux, Targetpositionaux, Daux ) ], Newsortedaux );
 		// Store new list.
 		-+fw_nearest_aux_ordered( Newsortedaux );
-
-		.println( Newsortedaux );
-
-		// Clean auxiliar belief to repeat inner loop again.
-		-+fw_nearest( -1, pos( -1, -1, -1 ), 9999 );
 	}
 
 	// Retrieve final list.

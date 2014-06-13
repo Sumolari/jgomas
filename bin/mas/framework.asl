@@ -87,42 +87,46 @@ currentObjective(0, 0, 0).
 	.
 
 /**
- * Replaces item at given position for given item in array stored in my_array belief.
+ * Replaces item at given position for given item in array stored in enemylist belief.
  */
 
 +!replace( Item, 0 )
 	:
-	my_array( Array ) &                            // Pilla el array
+	enemylist( Array ) &                           // Pilla el array
 	.length( Array, Arraylength ) &                // Longitid original
 	.sublist( Y, Array ) &                         // Pilla cualquier sublista (queremos la segunda mitad)
 	.length( Y, Arraylength - 1 ) &                // Fuerza que la sublista tenga la longitud de la segunda mitad menos 1
 	.nth( 1, Array, Half ) &                       // Pilla el item que está después de que estás editanto
 	.nth( 0, Y, Half )                             // Fuerza que la segunda mitad comience donde se espera
 	<-
+	//.println( "Antes: ", Array );
 	// Crea el nuevo array.
 	.concat( [ Item ], Y, Union );
 	// Guárdalo.
-	-+my_array( Union )
+	-+enemylist( Union );
+	//.println( "Después: ", Union );
 	.
 
 +!replace( Item, Position )
 	:
-	my_array( Array ) &                            // Pilla el array
+	enemylist( Array ) &                           // Pilla el array
 	.length( Array, Position + 1 ) &               // Longitid original
 	.sublist( X, Array ) &                         // Pilla cualquier sublista (queremos la primera mitad)
 	.length( X, Position ) &                       // Fuerza que la sublista tenga la longitud de la primera mitad
 	.nth( 0, Array, First ) &                      // Pilla el primer item de la lista original
 	.nth( 0, X, First )                            // Fuerza que la sublista comience en la primera mitad
 	<-
+	//.println( "Antes: ", Array );
 	// Crea el nuevo array.
 	.concat( X, [ Item ], Union );
 	// Guárdalo.
-	-+my_array( Union )
+	-+enemylist( Union );
+	//.println( "Después: ", Union );
 	.
 
 +!replace( Item, Position )
 	:
-	my_array( Array ) &                            // Pilla el array
+	enemylist( Array ) &                           // Pilla el array
 	.length( Array, Arraylength ) &                // Longitid original
 	.sublist( X, Array ) &                         // Pilla cualquier sublista (queremos la primera mitad)
 	.length( X, Position ) &                       // Fuerza que la sublista tenga la longitud de la primera mitad
@@ -133,8 +137,10 @@ currentObjective(0, 0, 0).
 	.nth( Position + 1, Array, Half ) &            // Pilla el item que está después de que estás editanto
 	.nth( 0, Y, Half )                             // Fuerza que la segunda mitad comience donde se espera
 	<-
+	//.println( "Antes: ", Array );
 	// Crea el nuevo array.
 	.concat( X, [ Item ], Y, Union );
 	// Guárdalo.
-	-+my_array( Union )
+	-+enemylist( Union );
+	//.println( "Después: ", Union );
 	.
