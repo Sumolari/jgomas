@@ -42,24 +42,47 @@
 	.length( FOVObjects, L );
 	-+auxpla( 0 );
 	-+auxtargetfoundpla( "NO" );
-	while( auxpla( C ) & C < L & auxtargetfoundpla( "NO" ) ) {
-		.nth( C, FOVObjects, A );
-		.nth( 1, A, Equipo );
-		if ( Equipo == 100 ) {
-			.nth( 6, A, Posicion);
-			!notify_enemy_at_position( Posicion );
-			!fw_add_task(
-				task(
-					3000,
-					"TASK_GOTO_POSITION_2",
-					M,
-					Posicion,
-					""
-				)
-			);
-			-+auxtargetfoundpla( "SI" );
+	-+enemies( [] );
+
+	+bucle( 0 );
+	while ( bucle( X ) & ( X < L ) ) {
+		.nth( X, FOVObjects, Object );
+		// Object structure
+		// [#, TEAM, TYPE, ANGLE, DISTANCE, HEALTH, POSITION ]
+		.nth( 2, Object, Type );
+
+		if ( Type > 1000 ) {
+		} else {
+			// Object may be an enemy
+			.nth( 1, Object, Team );
+			?my_formattedTeam( MyTeam );
+
+			if ( team( "ALLIED" ) ) {
+				if ( Team == 200 ) {  // Only if I'm ALLIED
+					?enemies( Enem );
+					.concat( Enem, [Object], Enemigos );
+					-+enemies( Enemigos );
+				}
+			} else {
+				if ( Team == 100 ) {  // Only if I'm ALLIED
+					?enemies( Enem );
+					.concat( Enem, [Object], Enemigos );
+					-+enemies( Enemigos );
+				}
+			}
 		}
-		-+auxpla( C + 1 );
+		-+bucle( X + 1 );
+	}
+	-bucle( _ );
+
+	?enemies( Enem );
+	.length( Enem, EnemLength );
+	if( EnemLength > 0 ) {
+		!fw_nearest( Enem );
+		?fw_nearest( Cagent, PosAgent, D );
+		.nth( 6, Cagent, NewDestination );
+		
+		!notify_enemy_at_position( NewDestination );
 	}
 	.
 
