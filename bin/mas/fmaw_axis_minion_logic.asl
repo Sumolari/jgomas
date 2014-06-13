@@ -64,6 +64,7 @@
 +!update_targets
 	<-
 	!map_12;
+	!map_13;
 	if ( map_12( yes ) ) {
 		-+patrollingRadius( 20 );
 	}

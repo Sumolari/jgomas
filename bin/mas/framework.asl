@@ -86,6 +86,14 @@ currentObjective(0, 0, 0).
 	}
 	.
 
++!map_13
+	<-
+	-+map_13( no );
+	?objective(ObjectiveX,	ObjectiveY,	ObjectiveZ);
+	if ( ObjectiveX == 184 & ObjectiveZ == 184 ) {
+			-+map_13( yes );
+	}
+	.
 /**
  * Replaces item at given position for given item in array stored in enemylist belief.
  */
