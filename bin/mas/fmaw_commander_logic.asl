@@ -294,11 +294,12 @@ inited( no ).
 		?objective(Fx, Fy, Fz);
 		-+my_objective( Fx, Fy, Fz );
 	}
-
-	+my_objective_old( 0, 0, 0 );
-	-+tasks( [] )
 	.
 
 +!custom_init .
 
-+!init .
++!init 
+	<-
+	+my_objective_old( 0, 0, 0 );
+	-+tasks( [] );
+	.

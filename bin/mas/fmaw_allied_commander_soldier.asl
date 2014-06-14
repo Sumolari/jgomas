@@ -6,7 +6,7 @@ manager("Manager").
 // Team of troop.
 team("ALLIED").
 // Type of troop.
-type("CLASS_FIELDOPS").
+type("CLASS_SOLDIER").
 
 { include("jgomas.asl") }
 
