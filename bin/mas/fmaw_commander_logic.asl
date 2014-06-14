@@ -11,9 +11,10 @@
 in_pos( false ).
 everybodyReady( "YES" ).
 in_position( "NO" ).
+blind_march( "NO" ).
 afterinit( "N" ).
 
-+!get_the_flag : everybodyReady( "YES" ) & in_position( "NO" )
++!get_the_flag : everybodyReady( "YES" ) & in_position( "NO" ) & blind_march( "NO" )
 	<-
 	?objective( FlagX, FlagY, FlagZ );
 	-+in_position( "YES" );
@@ -49,6 +50,7 @@ afterinit( "N" ).
 	<-
 	tasks( [] );
 	-+my_objective(Ex, Yg, Zt);
+	-+blind_march( "YES" );
 	!fw_add_task(
 		task(
 			4000,
@@ -70,10 +72,10 @@ afterinit( "N" ).
 	?my_position( X, Y, Z );
 	.concat( "flagpos(", X, ",", 0, ",", Z, ")", Messg );
 	.send_msg_with_conversation_id( E, tell, Messg, "INT" );
-	!cover_me
+	.at( "now +1 s", {+!cover_me} )
 	.
 
-+!go_com_pos : shouldContinue( "YES" ) & everybodyReady( "YES" ) & my_objective( X, Y, Z ) & my_objective_old( Xx, Yy, Zz ) & ( X < Xx | Z < Zz | X > Xx | Z > Zz )
++!go_com_pos : shouldContinue( "YES" ) & everybodyReady( "YES" ) & my_objective( X, Y, Z ) & my_objective_old( Xx, Yy, Zz ) & ( X < Xx | Z < Zz | X > Xx | Z > Zz ) & blind_march( "NO" )
 	<-
 	.wait(1000);
 	-+my_objective_old(X,Y,Z);
@@ -155,12 +157,13 @@ afterinit( "N" ).
 	-+everybodyReady( "NO" )
 	.
 
++shouldContinue( "YES" ) .
 
 /**
  * "Callback" que se ejecuta cada vez que el agente percibe objetos en su punto
  * de vista.
  */
-+!perform_look_action_follow_agent : following( TEAM ) & TEAM > 0 <-
++!perform_look_action_follow_agent : following( TEAM ) & TEAM > 0 & blind_march( "NO" ) <-
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, L );
 	+auxC( 0 );
@@ -218,7 +221,13 @@ afterinit( "N" ).
 	<-
 	?my_position( X, Y, Z );
 	-+afterinit( "Y" );
+	?tasks(Ts);
 	if ( map_12( yes ) ) {
+		.length( Ts, Tl );
+		if( Tl == 0 ){
+			?objective( Fx, Fy, Fz );
+			-+my_objective( Fx, Fy, Fz );
+		}
 		?my_objective( FlagX, FlagY, FlagZ );
 		!add_task(
 			task(

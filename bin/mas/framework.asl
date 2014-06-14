@@ -12,6 +12,7 @@ fwDebug( 3 ).
 position( valid ). // Weird bug.
 shouldContinue("YES").
 currentObjective(0, 0, 0).
+follower("NO").
 
 +!log( Text, Level ) <-
 	?fwDebug( Mode );
@@ -34,6 +35,7 @@ currentObjective(0, 0, 0).
 +flagpos(Fx, Fy, Fz)[source(A)] : map_12( yes ) <-
 	-+tasks([]);
 	-+my_objective(Fx, Fy, Fz);
+	-+follower("YES");
 	!add_task(
 		task(
 			4500,
@@ -52,6 +54,7 @@ currentObjective(0, 0, 0).
 
 +flagpos(Fx, Fy, Fz)[source(A)] <-
 	-+tasks([]);
+	-+follower("YES");
 	!fw_add_task(
 		task(
 			4500,

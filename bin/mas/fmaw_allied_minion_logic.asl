@@ -192,12 +192,12 @@ afterinit( "N" ).
 	?my_position( X, Y, Z );
 	.concat( "flagpos(", X, ",", 0, ",", Z, ")", Messg );
 	.send_msg_with_conversation_id( E, tell, Messg, "INT" );
-	!cover_me
+	.at( "now +1 s", {+!cover_me} )
 	.
 
 +shouldContinue( "YES" ) : blind_march( "YES" )
 	<-
-	?objective(Ox, Oy, Oz);
+	?my_objective(Ox, Oy, Oz);
 	!fw_add_task(
 		task(
 			5000,
@@ -225,7 +225,7 @@ afterinit( "N" ).
  * "Callback" que se ejecuta cada vez que el agente percibe objetos en su punto
  * de vista.
  */
-+!perform_look_action_follow_agent : following( TEAM ) & TEAM > 0
++!perform_look_action_follow_agent : following( TEAM ) & TEAM > 0 & blind_march( "NO" )
 	<-
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, L );
@@ -284,7 +284,13 @@ afterinit( "N" ).
 	<-
 	?my_position( X, Y, Z );
 	-+afterinit( "Y" );
+	?tasks(Ts);
 	if ( map_12( yes ) ) {
+		.length( Ts, Tl );
+		if( Tl == 0 ){
+			?objective( Fx, Fy, Fz );
+			-+my_objective( Fx, Fy, Fz );
+		}
 		?my_objective( FlagX, FlagY, FlagZ );
 		!add_task(
 			task(
