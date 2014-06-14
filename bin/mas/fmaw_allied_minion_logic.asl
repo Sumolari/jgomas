@@ -14,6 +14,7 @@ alreadySaid( "NO" ).
 blind_march( "NO" ).
 commander("nil").
 indpendent_mode( "NO" ).
+afterinit( "N" ).
 
 /**
  * Se pone a seguir a un agente del equipo dado.
@@ -165,9 +166,10 @@ indpendent_mode( "NO" ).
 
 +!cmdpos( Ex, Yg, Zt ) .
 
-+objective( Ex, Yg, Zt ) : cmdpos( Cx, Cy, Cz )
++objective( Ex, Yg, Zt ) : afterinit( "Y" )
 	<-
 	tasks( [] );
+	-+my_objective(Ex, Yg, Zt);
 	-+blind_march( "YES" );
 	!fw_add_task(
 		task(
@@ -186,18 +188,16 @@ indpendent_mode( "NO" ).
 	.
 
 +!cover_me <-
-	wait( 5000 );
 	.my_team( "ALLIED", E );
 	?my_position( X, Y, Z );
-	?tasks( T );
 	.concat( "flagpos(", X, ",", 0, ",", Z, ")", Messg );
 	.send_msg_with_conversation_id( E, tell, Messg, "INT" );
-	!cover_me
+	.at( "now +1 s", {+!cover_me} )
 	.
 
 +shouldContinue( "YES" ) : blind_march( "YES" )
 	<-
-	?objective(Ox, Oy, Oz);
+	?my_objective(Ox, Oy, Oz);
 	!fw_add_task(
 		task(
 			5000,
@@ -225,7 +225,7 @@ indpendent_mode( "NO" ).
  * "Callback" que se ejecuta cada vez que el agente percibe objetos en su punto
  * de vista.
  */
-+!perform_look_action_follow_agent : following( TEAM ) & TEAM > 0
++!perform_look_action_follow_agent : following( TEAM ) & TEAM > 0 & blind_march( "NO" )
 	<-
 	?fovObjects( FOVObjects );
 	.length( FOVObjects, L );
@@ -263,15 +263,7 @@ indpendent_mode( "NO" ).
 * <em> It's very useful to overload this plan. </em>
 *
 */
-+!perform_look_action : position_bug
-	<-
-	-+state( standing );
-	-+tasks( [] );
-	-position_bug
-	.
-
 +!perform_look_action .
-	// can overload again
 
 /////////////////////////////////
 //  UPDATE TARGETS
@@ -290,9 +282,30 @@ indpendent_mode( "NO" ).
 
 +!update_targets
 	<-
+	!map_12;
 	?my_position( X, Y, Z );
-	if ( X == 0 & Z == 0 ) {
-		+position_bug;
+	-+afterinit( "Y" );
+	?tasks(Ts);
+	if ( map_12( yes ) ) {
+		.length( Ts, Tl );
+		if( Tl == 0 ){
+			?objective( Fx, Fy, Fz );
+			-+my_objective( Fx, Fy, Fz );
+		}
+		?my_objective( FlagX, FlagY, FlagZ );
+		!add_task(
+			task(
+				1000,
+				"TASK_GET_OBJECTIVE",
+				M,
+				pos(
+					FlagX,
+					0,
+					FlagZ
+				),
+				""
+			)
+		);
 	} else {
 		?vigil_direction( D );
 		!search_commander( D );
@@ -305,9 +318,6 @@ indpendent_mode( "NO" ).
 
 +!init
 	<-
-	!map_12;
-	!map_13;
-	if ( map_12( yes ) ) {
-		.println( "I'm at map 12!!" );
-	}
+	?objective(Fx, Fy, Fz);
+	+my_objective( Fx, Fy, Fz );
 	.
