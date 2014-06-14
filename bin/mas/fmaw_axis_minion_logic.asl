@@ -68,17 +68,12 @@ repositioned( no ).
 //  HACK TO TAKE THE ENEMIES
 /////////////////////////////////
 
-+!take_them : map_13( yes )
++!take_them
 	<-
 	.println( "Take them at enemy's spawn!" );
 	// Go to where enemies will be...
 	-+repositioned( yes );
 	-+keeper_position( 153, 0, 153 );
-	.
-
-+!take_them
-	<-
-	.println( "THIS SHOULD NOT BE HAPPENING!" );
 	.
 
 /////////////////////////////////
@@ -108,7 +103,7 @@ repositioned( no ).
 			?my_position( Myx, Myy, Myz );
 			?objective( Ox, Oy, Oz );
 			if ( Myx > Ox ) {
-				-+keeper_position( 190, 0, 130 );
+				-+keeper_position( 170, 0, 130 );
 			} else { 
 				-+keeper_position( 130, 0, 190 );
 			}
