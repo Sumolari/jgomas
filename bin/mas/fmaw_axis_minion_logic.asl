@@ -102,12 +102,13 @@ repositioned( no ).
 			.at( "now +30 s", {+!take_them} );
 			?my_position( Myx, Myy, Myz );
 			?objective( Ox, Oy, Oz );
+			-+objective( 160, 0, 160 );
 			if ( Myx > Ox ) {
 				-+keeper_position( 170, 0, 130 );
 			} else { 
 				-+keeper_position( 130, 0, 190 );
 			}
-			-+patrollingRadius( 30 );
+			-+patrollingRadius( 10 );
 		}
 	}
 	.
