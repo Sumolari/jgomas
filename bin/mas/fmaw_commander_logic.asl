@@ -13,6 +13,7 @@ everybodyReady( "YES" ).
 in_position( "NO" ).
 blind_march( "NO" ).
 afterinit( "N" ).
+inited( no ).
 
 +!get_the_flag : everybodyReady( "YES" ) & in_position( "NO" ) & blind_march( "NO" )
 	<-
@@ -125,7 +126,7 @@ afterinit( "N" ).
 		.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
 		-+auxC( C + 1 );
 	}
-	.at( "now +15 s", {+!no_more_waiting} )
+	.at( "now +30 s", {+!no_more_waiting} )
 	.
 
 +!go_com_pos <-
@@ -140,6 +141,8 @@ afterinit( "N" ).
 +!no_more_waiting_2 : waitingFor( Wa ) <-
 	-+waitingFor(0)
 	.
+
++!no_more_waiting_2 .
 
 +soldierIsReady[ source( V ) ]
 	<-
@@ -229,6 +232,7 @@ afterinit( "N" ).
 
 +!update_targets
 	<-
+	!custom_init;
 	?my_position( X, Y, Z );
 	-+afterinit( "Y" );
 	?tasks(Ts);
@@ -262,7 +266,7 @@ afterinit( "N" ).
 //  Initialize variables
 /////////////////////////////////
 
-+!init
++!custom_init : inited( no )
 	<-
 	?debug( Mode );
 	?my_position( X, Y, Z );
@@ -294,3 +298,7 @@ afterinit( "N" ).
 	+my_objective_old( 0, 0, 0 );
 	-+tasks( [] )
 	.
+
++!custom_init .
+
++!init .

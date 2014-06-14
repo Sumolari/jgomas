@@ -15,6 +15,7 @@ blind_march( "NO" ).
 commander("nil").
 indpendent_mode( "NO" ).
 afterinit( "N" ).
+inited( no ).
 
 /**
  * Se pone a seguir a un agente del equipo dado.
@@ -282,7 +283,7 @@ afterinit( "N" ).
 
 +!update_targets
 	<-
-	!map_12;
+	!custom_init;
 	?my_position( X, Y, Z );
 	-+afterinit( "Y" );
 	?tasks(Ts);
@@ -316,8 +317,14 @@ afterinit( "N" ).
 //  Initialize variables
 /////////////////////////////////
 
-+!init
++!custom_init : inited( no )
 	<-
+	!map_12;
+	-+inited( yes );
 	?objective(Fx, Fy, Fz);
 	+my_objective( Fx, Fy, Fz );
 	.
+
++!custom_init .
+
++!init .
