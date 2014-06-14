@@ -57,26 +57,34 @@
 // Soy Fieldops y me han pedido ayuda.
 +fw_cfa( X, Y, Z, Ammo )[ source( M ) ]
 	<-
-	// Get my position.
-	?my_position( Myx, Myy, Myz );
-	// Get distance.
-	!fw_distance( pos( X, Y, Z ), pos( Myx, Myy, Myz ) );
-	?fw_distance( Dist );
-	// If distance is lower than threshold.
-	if ( Dist < 125 & Ammo < 30 ) {
-		// Give ammo.
-		!fw_add_task( task( 9999, "TASK_GIVE_AMMOPAKS", M, pos( X, Y, Z ), "" ) );
-		//.send(M, tell, "cfa_agree");
-		.concat( "cfa_agree", Content );
-		.send_msg_with_conversation_id( M, tell, Content, "CFA" );
-		-+state( standing );
+	!map_13;
+	if ( map_13( no ) ) {
+		// Get my position.
+		?my_position( Myx, Myy, Myz );
+		// Get distance.
+		!fw_distance( pos( X, Y, Z ), pos( Myx, Myy, Myz ) );
+		?fw_distance( Dist );
+		// If distance is lower than threshold.
+		if ( Dist < 125 & Ammo < 30 ) {
+			// Give ammo.
+			!fw_add_task( task( 9999, "TASK_GIVE_AMMOPAKS", M, pos( X, Y, Z ), "" ) );
+			//.send(M, tell, "cfa_agree");
+			.concat( "cfa_agree", Content );
+			.send_msg_with_conversation_id( M, tell, Content, "CFA" );
+			-+state( standing );
+		} else {
+			// Ingore.
+			//.send(M, tell, "cfa_refuse");
+			.concat("cfm_refuse", Content);
+			.send_msg_with_conversation_id(M, tell, Content, "CFA");
+		}
+		-fw_cfa( _ )[ source( M ) ];
 	} else {
 		// Ingore.
 		//.send(M, tell, "cfa_refuse");
 		.concat("cfm_refuse", Content);
 		.send_msg_with_conversation_id(M, tell, Content, "CFA");
 	}
-	-fw_cfa( _ )[ source( M ) ]
 	.
 
 /////////////////////////////////
@@ -87,26 +95,34 @@
 // Soy medico y me han pedido ayuda
 +fw_cfm( X, Y, Z, Salud )[ source( M ) ]
 	<-
-	// Get my position.
-	?my_position( Myx, Myy, Myz );
-	// Get distance.
-	!fw_distance( pos( X, Y, Z ), pos( Myx, Myy, Myz ) );
-	?fw_distance( Dist );
-	// If distance is lower than threshold.
-	if ( Dist < 75 & Salud < 50 ) {
-		// Give medpack.
-		!fw_add_task( task( 9999, "TASK_GIVE_MEDICPAKS", M, pos( X, Y, Z ), "" ) );
-		// .send(M, tell, "cfm_agree");
-		.concat( "cfm_agree", Content );
-		.send_msg_with_conversation_id( M, tell, Content, "CFM" );
-		-+state( standing );
+	!map_13;
+	if ( map_13( no ) ) {
+		// Get my position.
+		?my_position( Myx, Myy, Myz );
+		// Get distance.
+		!fw_distance( pos( X, Y, Z ), pos( Myx, Myy, Myz ) );
+		?fw_distance( Dist );
+		// If distance is lower than threshold.
+		if ( Dist < 75 & Salud < 50 ) {
+			// Give medpack.
+			!fw_add_task( task( 9999, "TASK_GIVE_MEDICPAKS", M, pos( X, Y, Z ), "" ) );
+			// .send(M, tell, "cfm_agree");
+			.concat( "cfm_agree", Content );
+			.send_msg_with_conversation_id( M, tell, Content, "CFM" );
+			-+state( standing );
+		} else {
+			// Ingore.
+			//.send(M, tell, "cfm_refuse");
+			.concat( "cfm_refuse", Content );
+			.send_msg_with_conversation_id( M, tell, Content, "CFM" );
+		}
+		-fw_cfm( _ )[ source( M ) ];
 	} else {
 		// Ingore.
 		//.send(M, tell, "cfm_refuse");
 		.concat( "cfm_refuse", Content );
 		.send_msg_with_conversation_id( M, tell, Content, "CFM" );
 	}
-	-fw_cfm( _ )[ source( M ) ]
 	.
 
 /////////////////////////////////

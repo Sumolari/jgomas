@@ -1,3 +1,6 @@
+
+{ include( "framework.asl" ) }
+
 // Plans
 
 /*******************************
@@ -100,7 +103,16 @@
  * <em> It's very useful to overload this plan. </em>
  *
  */
-+!update_targets <- !keeper.
++!update_targets
+	<-
+	!map_12;
+	!map_13;
+	if ( map_13( yes ) ) {
+		-+objective( 155, 0, 155 );
+	} else {
+		!keeper;
+	}
+	.
 
 /////////////////////////////////
 //  Initialize variables
