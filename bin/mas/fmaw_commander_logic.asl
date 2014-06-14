@@ -125,10 +125,20 @@ afterinit( "N" ).
 		.send_msg_with_conversation_id( Target, tell, Messg, "INT" );
 		-+auxC( C + 1 );
 	}
+	.at( "now +15 s", {+!no_more_waiting} )
 	.
 
 +!go_com_pos <-
 	!check_task_end
+	.
+	
++!no_more_waiting <-
+	// .at does not accept conditional plans
+	!no_more_waiting_2
+	.
+	
++!no_more_waiting_2 : waitingFor( Wa ) <-
+	-+waitingFor(0)
 	.
 
 +soldierIsReady[ source( V ) ]
