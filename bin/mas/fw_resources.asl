@@ -6,6 +6,8 @@
 //  PERFORM_TRESHOLD_ACTION
 /////////////////////////////////
 
++!performThresholdAction : team("ALLIED") .
+
 /**
  * Action to do when an agent has a problem with its ammo or health.
  *
